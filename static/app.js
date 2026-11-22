@@ -658,7 +658,8 @@ function renderGradedWorksheet(data) {
     } else if (currentSelectedLang === "mr" && data.voice_script_mr) {
       script = data.voice_script_mr;
     }
-    speakText(script, currentSelectedLang);
+    const directUrl = `/audio/walkthrough_${currentSelectedVoiceId}.mp3`;
+    speakText(script, currentSelectedLang, currentSelectedVoiceId, directUrl);
   }, 600);
 }
 
@@ -1104,7 +1105,8 @@ function setupEventListeners() {
       } else if (currentSelectedLang === "mr" && currentWorksheetData.voice_script_mr) {
         script = currentWorksheetData.voice_script_mr;
       }
-      speakText(script, currentSelectedLang, currentSelectedVoiceId);
+      const directAudioUrl = `/audio/walkthrough_${currentSelectedVoiceId}.mp3`;
+      speakText(script, currentSelectedLang, currentSelectedVoiceId, directAudioUrl);
     }
   });
 
@@ -1153,8 +1155,8 @@ function setupEventListeners() {
       // Update live transcript panel to the selected language
       updateTranscriptForLanguage();
 
-      // Speak greeting in the newly selected language and voice immediately
-      speakText(greeting, currentSelectedLang, selectedVal);
+      // Speak greeting in the newly selected language and voice immediately with instant zero-latency static audio
+      speakText(greeting, currentSelectedLang, selectedVal, `/audio/greeting_${selectedVal}.mp3`);
     });
   }
 
