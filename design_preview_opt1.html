@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Option 1: Studio Glass & Teacher Ribbon</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #090d16; color: #f1f5f9; }
+    .handwriting { font-family: 'Caveat', cursive; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .glass-dock { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(56, 189, 248, 0.25); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+    .glow-cyan { box-shadow: 0 0 25px rgba(6, 182, 212, 0.25); }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+  <!-- TOP NAVBAR -->
+  <header class="h-16 glass border-b border-slate-800 flex items-center justify-between px-6 z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-xl shadow-lg shadow-blue-500/30">✍️</div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">InkGrade <span class="text-blue-400">AI</span></span>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">STUDIO GLASS</span>
+        </div>
+        <p class="text-[11px] text-slate-400">Gemini 2.5 Flash Multimodal Spatial Grader</p>
+      </div>
+    </div>
+
+    <!-- TEACHER GRADING RIBBON -->
+    <div class="flex items-center gap-3 px-4 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/60 shadow-inner">
+      <div class="flex items-center gap-2 border-r border-slate-700 pr-3">
+        <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Overall:</span>
+        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">1 / 3 (33%)</span>
+      </div>
+      <div class="flex items-center gap-1.5 text-xs">
+        <button class="px-2.5 py-1 rounded-md bg-rose-500/15 text-rose-300 border border-rose-500/30 font-semibold flex items-center gap-1 hover:bg-rose-500/25">
+          <span>✕ Q1</span> <span class="text-[10px] opacity-75">(7/6)</span>
+        </button>
+        <button class="px-2.5 py-1 rounded-md bg-rose-500/15 text-rose-300 border border-rose-500/30 font-semibold flex items-center gap-1 hover:bg-rose-500/25">
+          <span>✕ Q2</span> <span class="text-[10px] opacity-75">(x=13)</span>
+        </button>
+        <button class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold flex items-center gap-1 shadow-sm hover:bg-emerald-500/30">
+          <span>✓ Q3</span> <span class="text-[10px] font-mono text-emerald-200">(19)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/60 text-xs text-emerald-300">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-semibold">Live Vision Active</span>
+      </div>
+      <button class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-lg shadow-blue-600/30 flex items-center gap-2">
+        <span>📤</span> Upload Worksheet
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APP GRID -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- LEFT SIDEBAR -->
+    <aside class="w-80 glass border-r border-slate-800 p-4 flex flex-col gap-4 overflow-y-auto">
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Sample Test Sheets</h3>
+        <div class="space-y-2">
+          <!-- Active Card -->
+          <div class="p-3 rounded-xl bg-gradient-to-r from-blue-950/80 to-slate-900 border border-blue-500/40 shadow-lg cursor-pointer">
+            <div class="flex justify-between items-start mb-1">
+              <span class="font-bold text-xs text-white">📷 Your Handwritten Math Photo</span>
+              <span class="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded font-mono font-bold">ACTIVE</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Real phone photo • Fractions, Algebra, PEMDAS</p>
+          </div>
+          <!-- Other Card -->
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+            <span class="font-semibold text-xs text-slate-300">📝 Alex's Algebra & PEMDAS Quiz</span>
+            <p class="text-[11px] text-slate-500">Grade 7 Math • 5 problem set</p>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+            <span class="font-semibold text-xs text-slate-300">📖 Emma's Grammar & Spelling</span>
+            <p class="text-[11px] text-slate-500">Grade 5 ELA • Syntax & Homophones</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- OCR Transcription Card -->
+      <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-slate-300">🔍 Handwriting OCR</span>
+          <span class="text-[10px] text-emerald-400 font-mono">100% Extracted</span>
+        </div>
+        <div class="text-[11px] font-mono text-slate-400 bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80 space-y-1">
+          <div><span class="text-slate-500">1.</span> 2/3 + 5/3 = (2+5)/(3+3) = 7/6</div>
+          <div><span class="text-slate-500">2.</span> 2x+7=19 -> 2x=26 -> x=13</div>
+          <div class="text-emerald-300 font-bold"><span class="text-emerald-500">3.</span> (-6)*(-4)+(-5) = 24-5 = 19 ✓</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER STAGE (THE PAPER WORKSHEET) -->
+    <main class="flex-1 bg-slate-950/60 p-6 flex flex-col items-center justify-center relative overflow-y-auto">
+      <div class="relative rounded-lg shadow-2xl overflow-hidden border border-slate-700/50 bg-[#faf8f5] w-[500px]">
+        <!-- Worksheet Mock Image & Annotations -->
+        <div class="p-6 text-slate-900 font-sans space-y-5 text-sm select-none relative">
+          <!-- Problem 1 -->
+          <div class="relative p-2.5 border-2 border-dashed border-rose-500 rounded-lg bg-rose-50/20">
+            <div class="font-semibold text-slate-800">1) Add fractions : &nbsp; 2/3 + 5/3</div>
+            <div class="font-mono text-slate-700 pl-4 mt-1">= (2+5) / (3+3) = 7/6</div>
+            <!-- Floating Teacher Callout -->
+            <div class="absolute -top-3.5 right-2 bg-rose-600 text-white px-2.5 py-0.5 rounded-md text-xs font-bold handwriting shadow-lg flex items-center gap-1">
+              <span>←</span> Don't add denominators! 2/3 + 5/3 = 7/3
+            </div>
+          </div>
+
+          <!-- Problem 2 -->
+          <div class="relative p-2.5 border-2 border-dashed border-rose-500 rounded-lg bg-rose-50/20">
+            <div class="font-semibold text-slate-800">2. Solve x: &nbsp; 2x + 7 = 19</div>
+            <div class="font-mono text-slate-700 pl-4 mt-1">2x = 19 + 7 <br> 2x = 26 <br> x = 13</div>
+            <div class="absolute -top-3.5 right-2 bg-rose-600 text-white px-2.5 py-0.5 rounded-md text-xs font-bold handwriting shadow-lg flex items-center gap-1">
+              <span>←</span> Sign error! 2x = 19 - 7 = 12 -> x = 6
+            </div>
+          </div>
+
+          <!-- Problem 3 (100% CORRECT) -->
+          <div class="relative p-2.5 border-2 border-dashed border-emerald-500 rounded-lg bg-emerald-50/30">
+            <div class="font-semibold text-slate-800">3. Simplify. &nbsp; (-6) * (-4) + (-5)</div>
+            <div class="font-mono text-slate-700 pl-4 mt-1">= 24 - 5 <br>= 19</div>
+            <div class="absolute -top-3.5 right-2 bg-emerald-600 text-white px-2.5 py-0.5 rounded-md text-xs font-bold handwriting shadow-lg flex items-center gap-1">
+              <span>✓</span> Q3: 100% Correct! Ans = 19
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLEEK FLOATING DOCK CONTROLS -->
+      <div class="absolute bottom-6 glass-dock rounded-full px-5 py-2 flex items-center gap-4 text-xs font-medium text-slate-300">
+        <button class="hover:text-blue-400 flex items-center gap-1.5 transition"><span>🔍</span> Fit to Screen</button>
+        <span class="text-slate-700">|</span>
+        <button class="hover:text-blue-400 flex items-center gap-1.5 transition"><span>👁️</span> Toggle Ink Layers</button>
+        <span class="text-slate-700">|</span>
+        <button class="hover:text-blue-400 flex items-center gap-1.5 transition"><span>⚡</span> Re-analyze Vision</button>
+        <span class="text-slate-700">|</span>
+        <button class="hover:text-amber-400 flex items-center gap-1.5 transition"><span>🌙</span> Dark / Light</button>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR (VOICE TUTOR) -->
+    <aside class="w-84 glass border-l border-slate-800 p-4 flex flex-col justify-between">
+      <div class="space-y-4">
+        <div class="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-blue-900/40 to-indigo-900/30 border border-blue-500/30">
+          <div class="w-12 h-12 rounded-xl bg-blue-600/30 border border-blue-400/40 flex items-center justify-center text-2xl">👩‍🏫</div>
+          <div>
+            <h4 class="font-bold text-sm text-white">Mrs. Davis</h4>
+            <span class="text-[11px] text-blue-300 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Conversational Voice Tutor
+            </span>
+          </div>
+        </div>
+
+        <!-- Audio Waveform Visualizer -->
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+          <div class="flex justify-between items-center text-xs text-slate-400">
+            <span>Voice Review</span>
+            <span class="text-blue-400 font-mono">0:24 / 0:38</span>
+          </div>
+          <div class="flex items-center gap-1 h-8 justify-center">
+            <span class="w-1 h-3 bg-blue-500 rounded-full animate-pulse"></span>
+            <span class="w-1 h-6 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.1s"></span>
+            <span class="w-1 h-4 bg-blue-500 rounded-full animate-pulse" style="animation-delay: 0.2s"></span>
+            <span class="w-1 h-7 bg-indigo-400 rounded-full animate-pulse" style="animation-delay: 0.15s"></span>
+            <span class="w-1 h-5 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 0.3s"></span>
+            <span class="w-1 h-8 bg-blue-300 rounded-full animate-pulse" style="animation-delay: 0.05s"></span>
+            <span class="w-1 h-4 bg-blue-500 rounded-full"></span>
+          </div>
+          <p class="text-[11px] text-slate-300 italic bg-slate-950 p-2 rounded border border-slate-800">
+            "You did problem 3 completely right! Remember, never add denominators together..."
+          </p>
+        </div>
+
+        <!-- Talk Back Input -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-semibold text-slate-400">Ask Mrs. Davis a question:</label>
+          <div class="flex gap-2">
+            <input type="text" placeholder="e.g. Why is problem 1 wrong?" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+            <button class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold">Ask</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Strip -->
+      <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] space-y-1.5">
+        <div class="flex justify-between text-slate-400">
+          <span>Model: <strong class="text-slate-200">Gemini 2.5 Flash</strong></span>
+          <span>Latency: <strong class="text-slate-200">1.15s</strong></span>
+        </div>
+        <div class="flex justify-between text-slate-400">
+          <span>Tokens: <strong class="text-blue-300">1,030</strong></span>
+          <span class="text-emerald-400 font-bold">$0.000237 (Free Tier)</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

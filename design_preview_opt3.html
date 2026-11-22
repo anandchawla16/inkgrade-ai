@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Option 3: AI Co-Pilot HUD</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #030712; color: #e2e8f0; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .hud-border { border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 0 15px rgba(6, 182, 212, 0.1); }
+    .hud-box-red { border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.1); }
+    .hud-box-green { border: 2px solid #10b981; background: rgba(16, 185, 129, 0.1); }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden mono">
+  <!-- TOP CYBER HUD BAR -->
+  <header class="h-16 bg-slate-950 border-b border-cyan-950 px-6 flex items-center justify-between z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded bg-cyan-950 border border-cyan-500/50 flex items-center justify-center text-cyan-400 font-bold text-lg shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+        ◈
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-base text-cyan-400 tracking-wider">INKGRADE_VISION</span>
+          <span class="text-[10px] bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-800">MULTIMODAL_V2.5</span>
+        </div>
+        <p class="text-[11px] text-slate-400 font-sans">Spatial Bounding Radar & OCR Extraction Engine</p>
+      </div>
+    </div>
+
+    <!-- RADAR STATUS -->
+    <div class="flex items-center gap-4 text-xs">
+      <div class="flex items-center gap-2 px-3 py-1 bg-slate-900 border border-slate-800 rounded">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        <span class="text-slate-300">RADAR: LOCK_ACQUIRED</span>
+      </div>
+      <div class="text-emerald-400 font-bold px-3 py-1 bg-emerald-950/40 border border-emerald-800 rounded">
+        ACCURACY: 99.4%
+      </div>
+    </div>
+  </header>
+
+  <!-- SPLIT SCREEN WORKSPACE -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- LEFT: RAW OCR EXTRACTION STREAM -->
+    <aside class="w-96 bg-slate-950 border-r border-slate-800 p-4 flex flex-col justify-between text-xs">
+      <div class="space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+          <span class="font-bold text-cyan-400 flex items-center gap-1.5">
+            <span>[+]</span> OCR_TRANSCRIPTION_STREAM
+          </span>
+          <span class="text-[10px] text-slate-500">RAW_BUFFER</span>
+        </div>
+
+        <div class="space-y-2 text-[11px]">
+          <div class="p-2.5 bg-slate-900/90 rounded border border-rose-900/50 space-y-1">
+            <div class="flex justify-between text-rose-400 font-bold">
+              <span>TARGET_01 // FRACTIONS</span>
+              <span class="text-[10px] bg-rose-950 px-1 rounded">FAIL</span>
+            </div>
+            <div class="text-slate-300">> 1) Add fractions : 2/3 + 5/3</div>
+            <div class="text-rose-300">> student: 7/6 | expected: 7/3</div>
+            <div class="text-slate-400 text-[10px] italic"># Note: Common denominator rule violated</div>
+          </div>
+
+          <div class="p-2.5 bg-slate-900/90 rounded border border-rose-900/50 space-y-1">
+            <div class="flex justify-between text-rose-400 font-bold">
+              <span>TARGET_02 // LINEAR_EQ</span>
+              <span class="text-[10px] bg-rose-950 px-1 rounded">FAIL</span>
+            </div>
+            <div class="text-slate-300">> 2. Solve x: 2x + 7 = 19</div>
+            <div class="text-rose-300">> student: x=13 | expected: x=6</div>
+            <div class="text-slate-400 text-[10px] italic"># Note: Transposition sign flip missed</div>
+          </div>
+
+          <div class="p-2.5 bg-slate-900/90 rounded border border-emerald-900/50 space-y-1 bg-emerald-950/10">
+            <div class="flex justify-between text-emerald-400 font-bold">
+              <span>TARGET_03 // ARITHMETIC</span>
+              <span class="text-[10px] bg-emerald-950 text-emerald-300 px-1 rounded">PASS</span>
+            </div>
+            <div class="text-slate-300">> 3. Simplify. (-6)*(-4)+(-5)</div>
+            <div class="text-emerald-300 font-bold">> student: 19 | expected: 19</div>
+            <div class="text-emerald-400 text-[10px]"># Verification: (-6)*(-4)=24; 24-5=19 ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Control -->
+      <button class="w-full py-2 rounded bg-cyan-950 hover:bg-cyan-900 border border-cyan-700 text-cyan-300 font-bold text-xs transition">
+        RE-TRIGGER_SPATIAL_SCAN
+      </button>
+    </aside>
+
+    <!-- CENTER: 2D BOUNDING BOX RADAR CANVAS -->
+    <main class="flex-1 bg-slate-900/40 p-6 flex flex-col items-center justify-center relative overflow-hidden">
+      <!-- Crosshair Background Grid -->
+      <div class="relative bg-slate-950 border border-cyan-500/30 rounded-lg p-5 shadow-2xl w-[520px]">
+        <div class="flex justify-between items-center text-[10px] text-cyan-400/80 border-b border-slate-800 pb-1 mb-3">
+          <span>FRAME: user_math_photo.jpg (768x1024)</span>
+          <span>SPATIAL_NORM: [0..1000]</span>
+        </div>
+
+        <!-- 2D Annotations -->
+        <div class="space-y-4">
+          <!-- Box 1 -->
+          <div class="hud-box-red p-2.5 rounded relative text-xs">
+            <div class="text-slate-200">1) Add fractions : 2/3 + 5/3</div>
+            <div class="text-slate-300 pl-4">= (2+5)/(3+3) = 7/6</div>
+            <span class="absolute -top-2.5 right-2 bg-rose-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">
+              BOX[190, 190, 315, 690] ✕
+            </span>
+          </div>
+
+          <!-- Box 2 -->
+          <div class="hud-box-red p-2.5 rounded relative text-xs">
+            <div class="text-slate-200">2. Solve x: 2x + 7 = 19</div>
+            <div class="text-slate-300 pl-4">2x = 19 + 7 -> x = 13</div>
+            <span class="absolute -top-2.5 right-2 bg-rose-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">
+              BOX[395, 230, 565, 660] ✕
+            </span>
+          </div>
+
+          <!-- Box 3 -->
+          <div class="hud-box-green p-2.5 rounded relative text-xs">
+            <div class="text-slate-200">3. Simplify. (-6) * (-4) + (-5)</div>
+            <div class="text-emerald-300 font-bold pl-4">= 24 - 5 = 19</div>
+            <span class="absolute -top-2.5 right-2 bg-emerald-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold">
+              BOX[585, 45, 890, 940] ✓ 19
+            </span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT: AI AGENT CONVERSATION PANEL -->
+    <aside class="w-80 bg-slate-950 border-l border-slate-800 p-4 flex flex-col justify-between text-xs">
+      <div class="space-y-3">
+        <div class="border-b border-slate-800 pb-2">
+          <span class="font-bold text-slate-300">TUTOR_SPEECH_SYNTHESIS</span>
+          <p class="text-[10px] text-slate-500 font-sans">Voice model: en-US-Studio-Voice</p>
+        </div>
+
+        <div class="p-3 rounded bg-slate-900 border border-slate-800 space-y-2">
+          <div class="flex justify-between text-[10px] text-cyan-400">
+            <span>SYNTHESIZED_AUDIO</span>
+            <span>1.15s</span>
+          </div>
+          <p class="text-[11px] text-slate-300 italic font-sans bg-slate-950 p-2 rounded">
+            "Problem 3 is 100% correct! The answer 19 is verified. For problem 1, denominators are unchanged..."
+          </p>
+          <div class="flex gap-2">
+            <button class="flex-1 py-1.5 rounded bg-cyan-600 text-black font-bold text-[11px]">PLAY</button>
+            <button class="px-3 py-1.5 rounded bg-slate-800 text-slate-300 text-[11px]">STOP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DEEP TELEMETRY HUD STRIP -->
+      <div class="p-3 bg-slate-900 border border-slate-800 rounded space-y-2">
+        <div class="text-cyan-400 font-bold text-[10px] border-b border-slate-800 pb-1">SESSION_METRICS</div>
+        <div class="grid grid-cols-2 gap-2 text-[10px]">
+          <div><span class="text-slate-500">PROMPT:</span> <span class="text-slate-200">582 tok</span></div>
+          <div><span class="text-slate-500">OUTPUT:</span> <span class="text-slate-200">448 tok</span></div>
+          <div><span class="text-slate-500">LATENCY:</span> <span class="text-cyan-300 font-bold">1.15s</span></div>
+          <div><span class="text-slate-500">COST:</span> <span class="text-emerald-400 font-bold">$0.00024</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

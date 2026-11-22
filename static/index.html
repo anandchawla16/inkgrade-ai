@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InkGrade AI — Handwritten Worksheet Grader & Voice Tutor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Crimson+Pro:ital,wght@0,500;0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css?v=neural_v6">
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-logo">
+        <span class="pen-icon">✍️</span>
+      </div>
+      <div>
+        <div class="brand-title">InkGrade <span class="ai-badge">Classroom</span></div>
+        <div class="brand-subtitle">Gemini Multimodal Spatial Grader • Teacher Desk View</div>
+      </div>
+    </div>
+
+    <!-- Authentic Teacher Rubber Stamp -->
+    <div class="nav-center-stamp" id="nav-stamp-container" style="display: none;">
+      <div class="rubber-stamp" id="rubber-stamp">
+        SCORE: <span id="stamp-score">1 / 3 (33%)</span> • <span id="stamp-verdict">NEEDS REVISION</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button id="btn-header-upload" class="btn-primary-highlight">
+        <span>📤</span> <strong>Upload Worksheet</strong>
+      </button>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        <span id="model-status">Gemini 3.8 Flash Vision</span>
+      </div>
+      <button id="btn-api-key" class="btn-secondary" title="Configure Gemini API Key">
+        <span>🔑</span> <span id="api-key-label">API Key: Demo Mode</span>
+      </button>
+      <a href="https://github.com" target="_blank" class="btn-ghost" title="Gemini Buildathon">
+        🏆 Gemini Buildathon
+      </a>
+    </div>
+  </header>
+
+  <!-- Main App Layout -->
+  <main class="app-layout">
+
+    <!-- Left Panel: Worksheet Selector & Stats -->
+    <aside class="sidebar-left">
+      <div class="panel-section">
+        <h3 class="section-title">📁 Student Assignment Binder</h3>
+        <p class="section-desc">Select a student worksheet from the binder or drop new homework:</p>
+        
+        <div class="sample-cards-list" id="sample-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="upload-zone" id="drop-zone">
+          <input type="file" id="file-input" accept="image/*" style="display: none;">
+          <div class="upload-icon">📂</div>
+          <div class="upload-text"><strong>Drop student worksheet</strong> or click to browse</div>
+          <div class="upload-hint">Supports phone photo, scanned paper, or image</div>
+          <button type="button" class="btn-primary-sm" style="margin-top: 10px; width: 100%;">
+            📁 Add Assignment to Binder
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Worksheet Summary Card -->
+      <div class="panel-section score-card-section" id="score-card-section" style="display: none;">
+        <h3 class="section-title">📋 Teacher Report</h3>
+        <div class="score-card">
+          <div class="score-header">
+            <div>
+              <div class="student-name" id="card-student-name">Alex Miller</div>
+              <div class="subject-tag" id="card-subject">Math</div>
+            </div>
+            <div class="score-badge" id="card-score">2 / 5</div>
+          </div>
+          <p class="score-summary" id="card-summary">...</p>
+        </div>
+      </div>
+
+      <!-- Handwriting OCR Extraction Console Section -->
+      <div class="panel-section ocr-section" id="ocr-section" style="display: none;">
+        <div class="ocr-title-row">
+          <h3 class="section-title">✒️ Handwriting Transcript</h3>
+          <span class="ocr-tag">Fountain Pen Log</span>
+        </div>
+        <p class="section-desc">Exact text & steps recognized from student handwriting:</p>
+        <div class="ocr-console-card" id="ocr-console-card">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- AI Cost, Model & Token Telemetry Section -->
+      <div class="panel-section telemetry-section" id="telemetry-section" style="display: none;">
+        <div class="ocr-title-row">
+          <h3 class="section-title">⚡ Model & Cost Telemetry</h3>
+          <span class="telemetry-tag" id="telemetry-model-tag">Gemini Flash</span>
+        </div>
+        <div class="telemetry-grid">
+          <div class="telemetry-item">
+            <span class="telemetry-label">Active Model</span>
+            <span class="telemetry-val" id="tel-model">gemini-3.8-flash</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-label">Total Tokens</span>
+            <span class="telemetry-val highlight-num" id="tel-tokens">1,030</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-label">Prompt Tokens</span>
+            <span class="telemetry-val" id="tel-prompt-tokens">582 (Image + Rules)</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-label">Output Tokens</span>
+            <span class="telemetry-val" id="tel-candidate-tokens">448 (JSON Boxes)</span>
+          </div>
+          <div class="telemetry-item highlight-box">
+            <span class="telemetry-label">Estimated Cost</span>
+            <span class="telemetry-val green" id="tel-cost">$0.000237 (~0.02¢)</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-label">Inference Time</span>
+            <span class="telemetry-val" id="tel-latency">1.15s</span>
+          </div>
+        </div>
+        <div class="telemetry-note">
+          💡 Free Tier: $0.00 | Paid Tier: ~$0.00024/sheet (~4,200 sheets per $1)
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Stage: The Interactive Paper Sheet -->
+    <section class="stage-container">
+      <div class="stage-toolbar">
+        <div class="toolbar-info">
+          <span id="active-sheet-name">Select a worksheet to begin</span>
+          <span class="legend">
+            <span class="legend-item"><span class="legend-dot green"></span> Correct (✓)</span>
+            <span class="legend-item"><span class="legend-dot red"></span> Error Annotated</span>
+          </span>
+          <!-- Live Telemetry Badge directly in the toolbar so it's always in view -->
+          <div class="toolbar-telemetry-pill" id="toolbar-telemetry-pill" style="display: none;">
+            <span class="tb-item">⚡ <strong id="tb-model">Gemini 3.8 Flash</strong></span>
+            <span class="tb-item">🪙 <strong id="tb-tokens">1,030</strong> tokens</span>
+            <span class="tb-item highlight-green">💵 <strong id="tb-cost">$0.0002</strong> (~0.02¢)</span>
+            <span class="tb-item">⏱️ <strong id="tb-lat">1.15s</strong></span>
+          </div>
+        </div>
+        <div class="toolbar-actions">
+          <button id="btn-zoom-fit" class="btn-tool" title="Fit to screen">Fit</button>
+          <button id="btn-re-grade" class="btn-primary-sm" style="display: none;">Re-analyze</button>
+        </div>
+      </div>
+
+      <div class="stage-viewport" id="stage-viewport">
+        <!-- High-End Interactive Progress Card & Stepper -->
+        <div class="stage-loading" id="stage-loading" style="display: none;">
+          <div class="progress-card">
+            <div class="progress-header">
+              <div class="progress-spinner-sm"></div>
+              <div>
+                <div class="loading-title" id="loading-title">Analyzing Handwritten Sheet...</div>
+                <div class="loading-elapsed" id="loading-elapsed">⏱️ Elapsed: 0.0s</div>
+              </div>
+              <div class="progress-pct" id="progress-pct">20%</div>
+            </div>
+
+            <!-- Dynamic Animated Progress Bar -->
+            <div class="progress-track">
+              <div class="progress-bar-fill" id="progress-bar-fill" style="width: 20%;"></div>
+            </div>
+
+            <!-- Live Stepper Indicators -->
+            <div class="progress-steps-list">
+              <div class="step-item step-done" id="step-1">
+                <span class="step-icon">📤</span>
+                <span class="step-label">1. Image Optimization & Resolution Scaling</span>
+                <span class="step-status">Complete ✓</span>
+              </div>
+              <div class="step-item step-active" id="step-2">
+                <span class="step-icon">🔍</span>
+                <span class="step-label">2. Handwriting OCR & Text Transcription</span>
+                <span class="step-status">Processing...</span>
+              </div>
+              <div class="step-item" id="step-3">
+                <span class="step-icon">📐</span>
+                <span class="step-label">3. Step-by-Step Logic & Error Detection</span>
+                <span class="step-status">Pending</span>
+              </div>
+              <div class="step-item" id="step-4">
+                <span class="step-icon">✍️</span>
+                <span class="step-label">4. Plotting Digital Red-Ink Annotations</span>
+                <span class="step-status">Pending</span>
+              </div>
+            </div>
+
+            <div class="progress-hint">
+              ⚡ Using low-latency Flash Vision. Large photos are auto-optimized.
+            </div>
+          </div>
+        </div>
+
+        <!-- In-App Error Alert Banner -->
+        <div class="error-banner" id="error-banner" style="display: none;">
+          <div class="error-icon">⚠️</div>
+          <div class="error-content">
+            <div class="error-title" id="error-title">Grading Request Failed</div>
+            <div class="error-message" id="error-message">Error details go here.</div>
+          </div>
+          <div class="error-actions">
+            <button id="btn-error-retry" class="btn-primary-sm">🔄 Retry</button>
+            <button id="btn-error-offline" class="btn-secondary" style="display: none;">Use Ground-Truth</button>
+            <button id="btn-error-dismiss" class="btn-tool">✕</button>
+          </div>
+        </div>
+
+        <!-- The Worksheet with Canvas Overlay & Telemetry Bar Below -->
+        <div class="sheet-container-wrapper" id="sheet-container-wrapper" style="display: none;">
+          <div class="sheet-wrapper" id="sheet-wrapper">
+            <img id="sheet-image" src="" alt="Handwritten Worksheet">
+            <div class="annotation-overlay" id="annotation-overlay">
+              <!-- Dynamic Red/Green Marks & Badges injected here -->
+            </div>
+          </div>
+
+          <!-- Live Cost, Token & Model Telemetry Bar (Directly below Worksheet) -->
+          <div class="sheet-telemetry-bar" id="sheet-telemetry-bar">
+            <div class="telemetry-bar-pill">
+              <span class="pill-label">⚡ Active Model</span>
+              <span class="pill-val" id="bar-model">gemini-3.8-flash</span>
+            </div>
+            <div class="telemetry-bar-pill">
+              <span class="pill-label">🪙 Total Tokens</span>
+              <span class="pill-val highlight-blue" id="bar-tokens">1,030</span>
+              <span class="pill-sub" id="bar-tokens-detail">(582 prompt / 448 candidate)</span>
+            </div>
+            <div class="telemetry-bar-pill highlight-cost-pill">
+              <span class="pill-label">💵 Estimated Cost</span>
+              <span class="pill-val green" id="bar-cost">$0.000237 (~0.024¢)</span>
+              <span class="pill-sub">Free on AI Studio (≤15 RPM)</span>
+            </div>
+            <div class="telemetry-bar-pill">
+              <span class="pill-label">⏱️ Vision Latency</span>
+              <span class="pill-val" id="bar-latency">1.15s</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">📝</div>
+          <h3>No Worksheet Loaded</h3>
+          <p>Click on one of the sample sheets on the left, or upload a photo of a student's handwritten work to see live digital corrections and voice feedback.</p>
+          <button id="btn-empty-upload" class="btn-primary-highlight" style="margin-top: 16px;">
+            <span>📤</span> Upload Handwritten Worksheet
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel: The Voice Tutor Console -->
+    <aside class="sidebar-right">
+      <div class="tutor-header">
+        <div class="tutor-avatar" id="tutor-avatar">🧑‍🏫</div>
+        <div class="tutor-meta">
+          <div class="tutor-name" id="tutor-name">English Coach (Guy)</div>
+          <div class="tutor-role" id="tutor-role">Audio Walkthrough & Explanations</div>
+        </div>
+        <div class="voice-badge">
+          <span class="pulse-indicator" id="pulse-indicator"></span>
+          <span id="voice-status">Ready</span>
+        </div>
+      </div>
+
+      <!-- Voice Persona & Natural Language Selector -->
+      <div class="voice-selector-group">
+        <label for="voice-persona-select" class="voice-select-label">
+          <span>🎙️ Voice & Language</span>
+          <span class="voice-type-tag" id="voice-type-tag">English Coach (Male)</span>
+        </label>
+        <select id="voice-persona-select" class="voice-select-dropdown">
+          <option value="en-male" selected>🧑‍🏫 English Coach - Male (Neutral Accent)</option>
+          <option value="en-female">👩‍🏫 English - Female (Teacher Mrs. Davis)</option>
+          <option value="hi-male">👨‍🏫 Hindi - शिक्षक Male (श्री वर्मा)</option>
+          <option value="mr-female">👩‍🏫 Marathi - शिक्षिका Female (सौ. कुलकर्णी)</option>
+        </select>
+      </div>
+
+      <!-- Animated Audio Waveform -->
+      <div class="waveform-container" id="waveform-box">
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+        <div class="waveform-bar"></div>
+      </div>
+
+      <!-- Voice Controls -->
+      <div class="voice-controls">
+        <button id="btn-play-voice" class="btn-voice-primary" disabled>
+          <span id="voice-btn-icon">▶</span>
+          <span id="voice-btn-text">Listen to Teacher Feedback</span>
+        </button>
+        <button id="btn-stop-voice" class="btn-voice-secondary" style="display: none;">
+          ⏹ Stop
+        </button>
+      </div>
+
+      <!-- Live Spoken Transcript -->
+      <div class="transcript-section">
+        <div class="transcript-header">
+          <span>Spoken Feedback Transcript</span>
+          <span class="live-pill">Interactive</span>
+        </div>
+        <div class="transcript-body" id="transcript-body">
+          <p class="transcript-placeholder">Select a worksheet above to hear the teacher's personalized spoken walkthrough.</p>
+        </div>
+      </div>
+
+      <!-- Two-Way Voice: Talk to the Teacher -->
+      <div class="talk-back-section">
+        <div class="talk-back-label">Ask the Teacher a Question</div>
+        <div class="talk-back-input-group">
+          <input type="text" id="talk-back-input" placeholder="e.g. 'Why did you mark #2 wrong?'" disabled>
+          <button id="btn-mic" class="btn-mic" title="Speak via Microphone" disabled>
+            🎙️
+          </button>
+          <button id="btn-send-question" class="btn-send" disabled>
+            ➔
+          </button>
+        </div>
+        <div class="mic-status" id="mic-status">Press 🎙️ or type to ask follow-up questions</div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- API Key Modal -->
+  <div class="modal-backdrop" id="api-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Gemini API Key Settings</h3>
+        <button class="modal-close" id="btn-close-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Enter your Google Gemini API Key to enable <strong>live multimodal vision & spatial grading</strong> for your own custom photos. Leave empty to use pre-computed demo mode on sample sheets.</p>
+        <div class="form-group">
+          <label for="input-api-key">Gemini API Key</label>
+          <input type="password" id="input-api-key" placeholder="AIzaSy...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="btn-clear-key">Use Demo Mode</button>
+        <button class="btn-primary" id="btn-save-key">Save & Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=neural_v6"></script>
+</body>
+</html>

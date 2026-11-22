@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InkGrade AI — Voice Audition & Selection Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #ede8df;
+      color: #1e293b;
+    }
+    .serif-title {
+      font-family: 'Crimson Pro', serif;
+    }
+    .waveform-bar {
+      width: 3.5px;
+      height: 8px;
+      background-color: #b45309;
+      border-radius: 3px;
+      transition: height 0.15s ease;
+    }
+    .playing .waveform-bar {
+      animation: barDance 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes barDance {
+      0% { height: 6px; }
+      100% { height: 24px; }
+    }
+  </style>
+</head>
+<body class="p-6 md:p-10 max-w-5xl mx-auto">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between border-b border-[#cbbeab] pb-6 mb-8">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🎙️</span>
+        <h1 class="serif-title text-3xl md:text-4xl font-bold text-[#382b20]">Voice Audition Studio</h1>
+      </div>
+      <p class="text-sm text-[#78716c] mt-1">Listen to actual spoken samples in English, Hindi, and Marathi, then select which voices to keep in InkGrade AI.</p>
+    </div>
+    <a href="/" class="bg-[#382b20] hover:bg-[#523e2d] text-white text-xs font-bold px-4 py-2.5 rounded-lg transition-all shadow-sm">
+      ← Back to App
+    </a>
+  </header>
+
+  <!-- Voices Grid -->
+  <div class="space-y-8">
+
+    <!-- English Voices -->
+    <section>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">🇬🇧</span>
+        <h2 class="serif-title text-2xl font-bold text-[#382b20]">English Voice Candidates</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <!-- Option 1: Mrs. Davis (Female) -->
+        <div class="bg-white rounded-xl p-5 border border-[#cbbeab] shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Option 1</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Female Teacher</span>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">👩‍🏫 English - Female</h3>
+            <p class="text-xs text-slate-500 mb-3">Mrs. Davis: Warm, patient teacher tone for walkthroughs.</p>
+            <div class="bg-[#faf8f5] p-3 rounded-lg border border-[#e7ded0] text-xs text-slate-700 italic mb-4">
+              "Hello! I am your English teacher. Let us review your math and grammar worksheet together."
+            </div>
+          </div>
+          <button onclick="playSample('en-female', 'en', this)" class="w-full bg-[#78350f] hover:bg-[#92400e] text-white font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-xs transition-all shadow">
+            <span>▶</span> Play Sample Audio
+          </button>
+        </div>
+
+        <!-- Option 2: Coach Guy (Male) -->
+        <div class="bg-white rounded-xl p-5 border border-[#cbbeab] shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Option 2</span>
+              <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">Male Coach</span>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">🧑‍🏫 English - Male</h3>
+            <p class="text-xs text-slate-500 mb-3">Coach Guy: Energetic, direct, encouraging coaching style.</p>
+            <div class="bg-[#faf8f5] p-3 rounded-lg border border-[#e7ded0] text-xs text-slate-700 italic mb-4">
+              "Hey there! Coach here. Let us look over your answers and sharpen your skills."
+            </div>
+          </div>
+          <button onclick="playSample('en-male', 'en', this)" class="w-full bg-[#78350f] hover:bg-[#92400e] text-white font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-xs transition-all shadow">
+            <span>▶</span> Play Sample Audio
+          </button>
+        </div>
+
+        <!-- Option 3: Miss Aria (Gentle Female) -->
+        <div class="bg-white rounded-xl p-5 border border-[#cbbeab] shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Option 3</span>
+              <span class="text-xs font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">Gentle Female</span>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">🌸 English - Gentle Female</h3>
+            <p class="text-xs text-slate-500 mb-3">Miss Aria: Soothing, soft-spoken guidance for kids.</p>
+            <div class="bg-[#faf8f5] p-3 rounded-lg border border-[#e7ded0] text-xs text-slate-700 italic mb-4">
+              "Hello! Miss Aria here. Let us gently walk through the questions you solved today."
+            </div>
+          </div>
+          <button onclick="playSample('en-aria', 'en', this)" class="w-full bg-[#78350f] hover:bg-[#92400e] text-white font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-xs transition-all shadow">
+            <span>▶</span> Play Sample Audio
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Hindi Voices -->
+    <section>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">🇮🇳</span>
+        <h2 class="serif-title text-2xl font-bold text-[#382b20]">Hindi Voice Candidates (हिन्दी)</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Hindi Option 1: Smt. Sharma (Female) -->
+        <div class="bg-white rounded-xl p-5 border border-[#cbbeab] shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Hindi Option 1</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">शिक्षिका (Female)</span>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">👩‍🏫 श्रीमती शर्मा (Hindi Female)</h3>
+            <p class="text-xs text-slate-500 mb-3">स्पष्ट, आत्मीय और सरल हिंदी में समझाने वाली शिक्षिका।</p>
+            <div class="bg-[#faf8f5] p-3 rounded-lg border border-[#e7ded0] text-xs text-slate-700 italic mb-4 font-hindi">
+              "नमस्ते! मैं आपकी शिक्षिका शर्मा हूँ। आइए आपकी वर्कशीट को मिलकर समझते हैं।"
+            </div>
+          </div>
+          <button onclick="playSample('hi-female', 'hi', this)" class="w-full bg-[#78350f] hover:bg-[#92400e] text-white font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-xs transition-all shadow">
+            <span>▶</span> Play Hindi Sample
+          </button>
+        </div>
+
+        <!-- Hindi Option 2: Shri Verma (Male) -->
+        <div class="bg-white rounded-xl p-5 border border-[#cbbeab] shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Hindi Option 2</span>
+              <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">शिक्षक (Male)</span>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">👨‍🏫 श्री वर्मा (Hindi Male)</h3>
+            <p class="text-xs text-slate-500 mb-3">आत्मविश्वासी, नियम-आधारित गणित व व्याकरण शिक्षक।</p>
+            <div class="bg-[#faf8f5] p-3 rounded-lg border border-[#e7ded0] text-xs text-slate-700 italic mb-4 font-hindi">
+              "नमस्ते! मैं आपका शिक्षक वर्मा हूँ। आइए गलतियों को सुधारें और सही नियम सीखें।"
+            </div>
+          </div>
+          <button onclick="playSample('hi-male', 'hi', this)" class="w-full bg-[#78350f] hover:bg-[#92400e] text-white font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-xs transition-all shadow">
+            <span>▶</span> Play Hindi Sample
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Marathi Voices -->
+    <section>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xl">🇮🇳</span>
+        <h2 class="serif-title text-2xl font-bold text-[#382b20]">Marathi Voice Candidates (मराठी)</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Marathi Option 1: Sau. Kulkarni (Female) -->
+        <div class="bg-white rounded-xl p-5 border border-[#cbbeab] shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Marathi Option 1</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">शिक्षिका (Female)</span>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">👩‍🏫 सौ. कुलकर्णी (Marathi Female)</h3>
+            <p class="text-xs text-slate-500 mb-3">अस्सल, प्रेमळ आणि अचूक मराठी उच्चारांची शिक्षिका।</p>
+            <div class="bg-[#faf8f5] p-3 rounded-lg border border-[#e7ded0] text-xs text-slate-700 italic mb-4 font-marathi">
+              "नमस्कार! मी तुमची शिक्षिका सौ. कुलकर्णी. चला तुमची वर्कशीट काळजीपूर्वक पाहूया."
+            </div>
+          </div>
+          <button onclick="playSample('mr-female', 'mr', this)" class="w-full bg-[#78350f] hover:bg-[#92400e] text-white font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-xs transition-all shadow">
+            <span>▶</span> Play Marathi Sample
+          </button>
+        </div>
+
+        <!-- Marathi Option 2: Shri Joshi (Male) -->
+        <div class="bg-white rounded-xl p-5 border border-[#cbbeab] shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-full">Marathi Option 2</span>
+              <span class="text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">शिक्षक (Male)</span>
+            </div>
+            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">👨‍🏫 श्री. जोशी (Marathi Male)</h3>
+            <p class="text-xs text-slate-500 mb-3">उत्साही आणि मार्गदर्शन करणारे मराठी शिक्षक सर।</p>
+            <div class="bg-[#faf8f5] p-3 rounded-lg border border-[#e7ded0] text-xs text-slate-700 italic mb-4 font-marathi">
+              "नमस्कार! मी तुमचा शिक्षक जोशी सर. चला गणित आणि व्याकरण सोपे करूया!"
+            </div>
+          </div>
+          <button onclick="playSample('mr-male', 'mr', this)" class="w-full bg-[#78350f] hover:bg-[#92400e] text-white font-bold py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-xs transition-all shadow">
+            <span>▶</span> Play Marathi Sample
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    let currentAudio = null;
+    let activeBtn = null;
+
+    async function playSample(voiceId, lang, btnEl) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (activeBtn) {
+          activeBtn.innerHTML = '<span>▶</span> Play Sample Audio';
+          activeBtn.classList.remove('bg-emerald-700');
+          activeBtn.classList.add('bg-[#78350f]');
+        }
+      }
+
+      btnEl.innerHTML = '<span>⏳</span> Loading speech...';
+      activeBtn = btnEl;
+
+      const texts = {
+        'en-female': 'Hello! I am your English teacher. Let us review your math and grammar worksheet together.',
+        'en-male': 'Hey there! Coach here. Let us look over your answers and sharpen your skills.',
+        'en-aria': 'Hello! Miss Aria here. Let us gently walk through the questions you solved today.',
+        'hi-female': 'नमस्ते! मैं आपकी शिक्षिका शर्मा हूँ। आइए आपकी वर्कशीट को मिलकर समझते हैं।',
+        'hi-male': 'नमस्ते! मैं आपका शिक्षक वर्मा हूँ। आइए गलतियों को सुधारें और सही नियम सीखें।',
+        'mr-female': 'नमस्कार! मी तुमची शिक्षिका सौ. कुलकर्णी. चला तुमची वर्कशीट काळजीपूर्वक पाहूया.',
+        'mr-male': 'नमस्कार! मी तुमचा शिक्षक जोशी सर. चला गणित आणि व्याकरण सोपे करूया!'
+      };
+
+      try {
+        const res = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: texts[voiceId] || 'Hello',
+            language: lang,
+            voice_name: voiceId
+          })
+        });
+        const data = await res.json();
+        if (data.audio_base64) {
+          currentAudio = new Audio('data:audio/mp3;base64,' + data.audio_base64);
+          btnEl.innerHTML = '<span>🔊</span> Playing...';
+          btnEl.classList.remove('bg-[#78350f]');
+          btnEl.classList.add('bg-emerald-700');
+          
+          currentAudio.onended = () => {
+            btnEl.innerHTML = '<span>▶</span> Replay Sample';
+            btnEl.classList.remove('bg-emerald-700');
+            btnEl.classList.add('bg-[#78350f]');
+          };
+          currentAudio.onerror = () => {
+            btnEl.innerHTML = '<span>⚠️</span> Error playing';
+          };
+          await currentAudio.play();
+        }
+      } catch (e) {
+        console.error(e);
+        btnEl.innerHTML = '<span>⚠️</span> Error';
+      }
+    }
+  </script>
+</body>
+</html>

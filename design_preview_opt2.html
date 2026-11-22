@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Option 2: Academic Notebook & Real Ink</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,500;0,700;1,600&family=Caveat:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Crimson Pro', serif; background: #e8e2d5; color: #1e293b; }
+    .handwriting { font-family: 'Caveat', cursive; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .paper-texture {
+      background: #fbf9f4;
+      background-image: repeating-linear-gradient(transparent, transparent 31px, #d5e2f5 31px, #d5e2f5 32px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.18), 0 2px 5px rgba(0,0,0,0.08);
+    }
+    .red-margin {
+      border-left: 2px solid #f87171;
+    }
+    .rubber-stamp {
+      border: 3px solid #dc2626;
+      color: #dc2626;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 1px;
+      transform: rotate(-6deg);
+      border-radius: 8px;
+      mask-image: radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0.7) 100%);
+    }
+  </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+  <!-- TOP ACADEMIC HEADER -->
+  <header class="h-16 bg-[#3d2f23] text-amber-100 border-b border-[#2b2118] flex items-center justify-between px-8 shadow-md z-20">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded bg-[#574332] border border-amber-600/40 flex items-center justify-center text-xl shadow">📚</div>
+      <div>
+        <h1 class="font-bold text-lg text-amber-50 tracking-wide">InkGrade <span class="italic text-amber-300">Classroom Edition</span></h1>
+        <p class="text-xs text-amber-300/70 font-sans">Teacher Grading Desk • Powered by Google Gemini Vision</p>
+      </div>
+    </div>
+
+    <!-- STAMP GRADE -->
+    <div class="flex items-center gap-4">
+      <div class="rubber-stamp px-3 py-1 text-xs">
+        Score: 1 / 3 (33%) • Needs Work
+      </div>
+      <button class="px-4 py-2 rounded bg-amber-700 hover:bg-amber-600 text-amber-50 text-xs font-sans font-bold shadow transition">
+        📁 Open File Binder
+      </button>
+    </div>
+  </header>
+
+  <!-- WORKSPACE -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- LEFT FILE FOLDER TABS -->
+    <aside class="w-72 bg-[#dfd7c7] border-r border-[#cbbeab] p-4 flex flex-col justify-between font-sans text-xs">
+      <div class="space-y-3">
+        <h3 class="font-bold uppercase tracking-wider text-slate-700 text-[11px] border-b border-[#cbbeab] pb-1">
+          Student Assignment Binder
+        </h3>
+        <div class="space-y-2">
+          <div class="p-3 bg-white rounded border-l-4 border-amber-700 shadow-sm cursor-pointer">
+            <span class="font-bold text-slate-900 block">Math Homework #4</span>
+            <span class="text-[11px] text-slate-500">Student: Anonymous • 3 Problems</span>
+          </div>
+          <div class="p-3 bg-[#f3efe6] rounded hover:bg-white border border-transparent hover:border-[#cbbeab] cursor-pointer transition">
+            <span class="font-semibold text-slate-800 block">Alex Miller (Algebra)</span>
+            <span class="text-[11px] text-slate-500">Grade 7 • Linear equations</span>
+          </div>
+          <div class="p-3 bg-[#f3efe6] rounded hover:bg-white border border-transparent hover:border-[#cbbeab] cursor-pointer transition">
+            <span class="font-semibold text-slate-800 block">Emma Watson (Grammar)</span>
+            <span class="text-[11px] text-slate-500">Grade 5 • English Language Arts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fountain Pen Transcript Card -->
+      <div class="bg-white p-3 rounded border border-[#cbbeab] shadow-sm space-y-1.5 font-mono text-[10px]">
+        <div class="font-bold text-slate-800 text-xs font-serif flex items-center gap-1.5">
+          <span>✒️</span> Transcription Log
+        </div>
+        <p class="text-slate-600">Q1: 2/3 + 5/3 = 7/6 (Error)</p>
+        <p class="text-slate-600">Q2: 2x+7=19 -> 2x=26 (Error)</p>
+        <p class="text-emerald-700 font-bold">Q3: (-6)*(-4)-5 = 19 (Correct!)</p>
+      </div>
+    </aside>
+
+    <!-- CENTER PAPER STAGE -->
+    <main class="flex-1 bg-[#ede8df] p-6 flex flex-col items-center justify-center relative overflow-y-auto">
+      <!-- RULED PAPER SHEET -->
+      <div class="paper-texture w-[520px] rounded p-8 min-h-[440px] relative">
+        <div class="red-margin pl-6 space-y-6">
+          <!-- Sheet Header -->
+          <div class="flex justify-between items-center text-xs text-slate-500 font-sans border-b border-slate-300 pb-2">
+            <span>Name: <u>Math Student</u></span>
+            <span>Date: <u>Nov 22</u></span>
+            <span>Grade: <u>7th Math</u></span>
+          </div>
+
+          <!-- Problem 1 -->
+          <div class="relative group">
+            <div class="text-base text-slate-800 font-serif">1) Add fractions : &nbsp; 2/3 + 5/3</div>
+            <div class="text-lg text-blue-900 handwriting font-bold pl-4 mt-1">= (2+5)/(3+3) = 7/6</div>
+            <!-- Red Gel Pen Correction -->
+            <div class="absolute -top-1 right-0 text-rose-600 handwriting font-bold text-sm bg-rose-50/90 border border-rose-300 px-2 py-0.5 rounded shadow">
+              ✗ Keep denominator as 3! Ans = 7/3
+            </div>
+          </div>
+
+          <!-- Problem 2 -->
+          <div class="relative group">
+            <div class="text-base text-slate-800 font-serif">2. Solve for x: &nbsp; 2x + 7 = 19</div>
+            <div class="text-lg text-blue-900 handwriting font-bold pl-4 mt-1">2x = 19 + 7 <br>2x = 26 <br>x = 13</div>
+            <div class="absolute top-2 right-0 text-rose-600 handwriting font-bold text-sm bg-rose-50/90 border border-rose-300 px-2 py-0.5 rounded shadow">
+              ✗ Sign flip: 19 - 7 = 12 -> x = 6
+            </div>
+          </div>
+
+          <!-- Problem 3 -->
+          <div class="relative group">
+            <div class="text-base text-slate-800 font-serif">3. Simplify: &nbsp; (-6) * (-4) + (-5)</div>
+            <div class="text-lg text-blue-900 handwriting font-bold pl-4 mt-1">= 24 - 5 <br>= 19</div>
+            <div class="absolute -top-1 right-0 text-emerald-700 handwriting font-bold text-base bg-emerald-50/90 border border-emerald-400 px-2.5 py-0.5 rounded shadow">
+              ✓ 100% Correct!
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- RIGHT TEACHER DESK SIDEBAR -->
+    <aside class="w-80 bg-[#f4efe6] border-l border-[#cbbeab] p-5 flex flex-col justify-between font-sans">
+      <div class="space-y-4">
+        <div class="text-center pb-3 border-b border-[#cbbeab]">
+          <div class="w-16 h-16 rounded-full bg-[#574332] text-amber-100 flex items-center justify-center text-3xl mx-auto shadow-md mb-2">👩‍🏫</div>
+          <h3 class="font-bold text-sm text-slate-900 font-serif">Teacher Mrs. Davis</h3>
+          <p class="text-xs text-slate-600">Personal Voice Explanation</p>
+        </div>
+
+        <div class="bg-white p-3.5 rounded border border-[#cbbeab] shadow-sm space-y-2 text-xs">
+          <div class="flex justify-between items-center text-slate-500 text-[11px]">
+            <span>Teacher Audio Feedback</span>
+            <span class="font-mono text-emerald-700">Ready</span>
+          </div>
+          <p class="italic text-slate-700 bg-amber-50/60 p-2 rounded border border-amber-200/60 text-[11px]">
+            "Well done on question 3! Remember that fractions with common denominators keep the bottom number..."
+          </p>
+          <button class="w-full py-2 bg-amber-800 hover:bg-amber-700 text-white rounded font-bold text-xs shadow flex items-center justify-center gap-1.5">
+            <span>▶</span> Listen to Teacher
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white p-3 rounded border border-[#cbbeab] text-[11px] font-mono text-slate-600 space-y-1">
+        <div class="flex justify-between">
+          <span>Gemini 2.5 Flash</span>
+          <span>1.15s</span>
+        </div>
+        <div class="flex justify-between font-bold text-emerald-800">
+          <span>Cost: $0.00024</span>
+          <span>1,030 tok</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
