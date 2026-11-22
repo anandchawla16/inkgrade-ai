@@ -5,7 +5,7 @@ let currentSpeechUtterance = null;
 let currentAudioElement = null;
 let currentSelectedLang = "en"; // "en", "hi", "mr"
 let currentSelectedVoiceId = "en-male";
-let currentFeedbackStyle = localStorage.getItem("FEEDBACK_STYLE") || "capsule";
+let currentFeedbackStyle = localStorage.getItem("FEEDBACK_STYLE_V3") || "script";
 let speechRecognition = null;
 let apiKey = localStorage.getItem("GEMINI_API_KEY") || "";
 
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Dynamic Feedback Design & Font Switcher
 function applyFeedbackStyle(styleName) {
   currentFeedbackStyle = styleName;
-  localStorage.setItem("FEEDBACK_STYLE", styleName);
+  localStorage.setItem("FEEDBACK_STYLE_V3", styleName);
 
   const validThemes = ["theme-capsule", "theme-script", "theme-sticky", "theme-stamp"];
   const targetTheme = `theme-${styleName}`;
@@ -724,28 +724,29 @@ function drawAnnotations(annotations) {
     boxEl.style.height = `${heightPct}%`;
 
     // 2. Create Floating Teacher Badge
-    // Anchored STRICTLY OUTSIDE the box so it NEVER overlaps student handwriting!
+    // Anchored in the blank margin column so it NEVER overlaps question or answer!
     const badgeEl = document.createElement("div");
     badgeEl.className = isCorrect ? "teacher-correct-badge" : "teacher-note-badge";
+
+    const xmaxPct = Number(leftPct) + Number(widthPct);
+    const yminPct = Number(topPct);
+
+    // If there is blank margin space on the right (box ends at or before 76% width),
+    // place badge in the empty right margin (Zero Overlap with Question or Answer!)
+    if (xmaxPct <= 76) {
+      badgeEl.classList.add("badge-margin-right");
+    } else if (yminPct >= 10) {
+      badgeEl.classList.add(isCorrect ? "badge-outside-top-right" : "badge-outside-top-left");
+    } else {
+      badgeEl.classList.add(isCorrect ? "badge-outside-bottom-right" : "badge-outside-bottom-left");
+    }
 
     if (isCorrect) {
       const answerDisplay = ann.student_answer || ann.expected_answer || "";
       const answerSnippet = answerDisplay ? ` <span class="ans-pill">Ans = ${answerDisplay}</span>` : "";
       badgeEl.innerHTML = `✓ <strong>Q${ann.question_number}: Correct!</strong>${answerSnippet}`;
-      // Position above top-right corner of box (in empty gap above problem)
-      if (ymin < 50) {
-        badgeEl.classList.add("badge-outside-bottom-right");
-      } else {
-        badgeEl.classList.add("badge-outside-top-right");
-      }
     } else {
       badgeEl.innerHTML = `<span class="note-pointer">↳</span> <strong>Q${ann.question_number}:</strong> ${ann.teacher_note}`;
-      // Position above top-left corner of box (in empty gap above problem)
-      if (ymin < 50) {
-        badgeEl.classList.add("badge-outside-bottom-left");
-      } else {
-        badgeEl.classList.add("badge-outside-top-left");
-      }
     }
 
     // Interactive clicks (localized to active language with instant audio streaming)
