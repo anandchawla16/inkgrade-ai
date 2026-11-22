@@ -69,37 +69,177 @@ function updateApiKeyDisplay() {
   }
 }
 
+// Assignment Binder State & Management
+let assignmentsList = [];
+
 // Load Pre-generated Sample Sheets
 async function loadSampleSheets() {
   try {
     const res = await fetch("/api/samples");
     const samples = await res.json();
-    sampleListEl.innerHTML = "";
+    assignmentsList = samples.map(s => ({ ...s, isCustom: false }));
+    renderBinderList();
 
-    samples.forEach((sample, idx) => {
-      const card = document.createElement("div");
-      card.className = "sample-card";
-      card.dataset.id = sample.id;
-      card.innerHTML = `
-        <div class="sample-card-title">${sample.title}</div>
-        <div class="sample-card-subject">${sample.subject}</div>
-        <div class="sample-card-desc">${sample.description}</div>
-      `;
-      card.addEventListener("click", () => {
-        document.querySelectorAll(".sample-card").forEach(c => c.classList.remove("active"));
-        card.classList.add("active");
-        gradeSampleSheet(sample.id, sample.title);
-      });
-      sampleListEl.appendChild(card);
-
-      // Auto-load first sample on start!
-      if (idx === 0) {
-        card.classList.add("active");
-        gradeSampleSheet(sample.id, sample.title);
-      }
-    });
+    // Auto-load first sample on start!
+    if (assignmentsList.length > 0) {
+      const first = assignmentsList[0];
+      selectAssignment(first.id, first.title);
+    } else {
+      clearActiveWorksheet();
+    }
   } catch (err) {
     console.error("Failed to load sample sheets", err);
+  }
+}
+
+function updateBinderCount() {
+  const badge = document.getElementById("binder-count-badge");
+  if (!badge) return;
+  const count = assignmentsList.length;
+  badge.textContent = `(${count} ${count === 1 ? 'sheet' : 'sheets'})`;
+}
+
+function renderBinderList() {
+  if (!sampleListEl) return;
+  sampleListEl.innerHTML = "";
+  updateBinderCount();
+
+  if (assignmentsList.length === 0) {
+    sampleListEl.innerHTML = `
+      <div class="empty-binder-msg">
+        <div>📂 Binder is empty.</div>
+        <div style="font-size: 11px; margin-top: 4px; color: #78716c;">All assignments have been deleted. Drop a worksheet above or restore default samples:</div>
+        <button type="button" class="btn-restore-samples" style="margin-top: 10px;" id="btn-restore-empty">
+          ↺ Restore Sample Sheets
+        </button>
+      </div>
+    `;
+    const btnRestoreEmpty = document.getElementById("btn-restore-empty");
+    if (btnRestoreEmpty) {
+      btnRestoreEmpty.addEventListener("click", restoreDefaultSamples);
+    }
+    return;
+  }
+
+  assignmentsList.forEach(assignment => {
+    const card = document.createElement("div");
+    card.className = "sample-card";
+    if (currentSampleId === assignment.id) {
+      card.classList.add("active");
+    }
+    card.dataset.id = assignment.id;
+    card.innerHTML = `
+      <button class="btn-card-delete" title="Delete assignment from binder" aria-label="Delete assignment" data-id="${assignment.id}">
+        🗑️
+      </button>
+      <div class="sample-card-title">${assignment.title}</div>
+      <div class="sample-card-subject">${assignment.subject}</div>
+      <div class="sample-card-desc">${assignment.description || ''}</div>
+    `;
+
+    // Click card to select & grade
+    card.addEventListener("click", () => {
+      selectAssignment(assignment.id, assignment.title);
+    });
+
+    // Delete button click
+    const btnDelete = card.querySelector(".btn-card-delete");
+    if (btnDelete) {
+      btnDelete.addEventListener("click", (e) => {
+        e.stopPropagation();
+        deleteAssignment(assignment.id);
+      });
+    }
+
+    sampleListEl.appendChild(card);
+  });
+}
+
+function selectAssignment(id, title) {
+  currentSampleId = id;
+  document.querySelectorAll(".sample-card").forEach(c => {
+    c.classList.toggle("active", c.dataset.id === id);
+  });
+  const assignment = assignmentsList.find(a => a.id === id);
+  if (assignment) {
+    if (assignment.isCustom && assignment.file) {
+      gradeUploadedFile(assignment.file, false);
+    } else {
+      gradeSampleSheet(assignment.id, assignment.title);
+    }
+  }
+}
+
+function deleteAssignment(id) {
+  const card = document.querySelector(`.sample-card[data-id="${id}"]`);
+  if (card) {
+    card.classList.add("deleting");
+  }
+
+  setTimeout(() => {
+    // If the deleted assignment was currently open, clear the stage
+    if (currentSampleId === id) {
+      clearActiveWorksheet();
+    }
+
+    assignmentsList = assignmentsList.filter(a => a.id !== id);
+    renderBinderList();
+  }, 220);
+}
+
+function clearActiveWorksheet() {
+  currentWorksheetData = null;
+  currentSampleId = null;
+  stopVoice();
+
+  const cWrap = document.getElementById("sheet-container-wrapper");
+  if (cWrap) cWrap.style.display = "none";
+  if (sheetWrapperEl) sheetWrapperEl.style.display = "none";
+  if (scoreCardSectionEl) scoreCardSectionEl.style.display = "none";
+
+  const ocrSectionEl = document.getElementById("ocr-section");
+  if (ocrSectionEl) ocrSectionEl.style.display = "none";
+
+  const telSec = document.getElementById("telemetry-section");
+  if (telSec) telSec.style.display = "none";
+
+  const stampContainer = document.getElementById("nav-stamp-container");
+  if (stampContainer) stampContainer.style.display = "none";
+
+  const btnDeleteActive = document.getElementById("btn-delete-active-sheet");
+  if (btnDeleteActive) btnDeleteActive.style.display = "none";
+
+  const btnReGrade = document.getElementById("btn-re-grade");
+  if (btnReGrade) btnReGrade.style.display = "none";
+
+  const tbTelemetryPill = document.getElementById("toolbar-telemetry-pill");
+  if (tbTelemetryPill) tbTelemetryPill.style.display = "none";
+
+  document.querySelectorAll(".sample-card").forEach(c => c.classList.remove("active"));
+
+  if (activeSheetNameEl) activeSheetNameEl.textContent = "No Worksheet Loaded";
+  if (emptyStateEl) emptyStateEl.style.display = "flex";
+
+  if (transcriptBodyEl) {
+    transcriptBodyEl.innerHTML = `<div class="transcript-placeholder">Assignment removed. Select or upload a worksheet from the left panel to begin audio feedback.</div>`;
+  }
+}
+
+async function restoreDefaultSamples() {
+  try {
+    const res = await fetch("/api/samples");
+    const samples = await res.json();
+    const sampleIds = new Set(samples.map(s => s.id));
+    const customUploads = assignmentsList.filter(a => a.isCustom && !sampleIds.has(a.id));
+    assignmentsList = [...samples.map(s => ({ ...s, isCustom: false })), ...customUploads];
+    renderBinderList();
+
+    if (assignmentsList.length > 0) {
+      const first = assignmentsList[0];
+      selectAssignment(first.id, first.title);
+    }
+  } catch (e) {
+    console.error("Failed to restore default samples", e);
   }
 }
 
@@ -274,7 +414,22 @@ async function gradeSampleSheet(sampleId, title) {
 let pendingUploadFile = null;
 
 // Grade Uploaded Custom File
-async function gradeUploadedFile(file) {
+async function gradeUploadedFile(file, addToList = true) {
+  if (addToList) {
+    const uploadId = "upload_" + Date.now();
+    currentSampleId = uploadId;
+    const newAssignment = {
+      id: uploadId,
+      title: `📄 ${file.name}`,
+      subject: "Custom Upload",
+      description: `Uploaded at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • ${Math.round(file.size / 1024)} KB`,
+      isCustom: true,
+      file: file
+    };
+    assignmentsList.unshift(newAssignment);
+    renderBinderList();
+  }
+
   if (!apiKey) {
     pendingUploadFile = file;
     inputApiKeyEl.placeholder = "AIzaSy... (Paste Gemini API key to grade custom upload)";
@@ -285,7 +440,9 @@ async function gradeUploadedFile(file) {
   showLoading(true);
   stopVoice();
   activeSheetNameEl.textContent = `Uploaded: ${file.name}`;
-  document.querySelectorAll(".sample-card").forEach(c => c.classList.remove("active"));
+  document.querySelectorAll(".sample-card").forEach(c => {
+    c.classList.toggle("active", c.dataset.id === currentSampleId);
+  });
 
   const formData = new FormData();
   formData.append("file", file);
@@ -472,6 +629,10 @@ function renderGradedWorksheet(data) {
   talkBackInputEl.disabled = false;
   btnMicEl.disabled = false;
   btnSendQuestionEl.disabled = false;
+
+  // Show Delete Active Sheet Button in Stage Toolbar
+  const btnDeleteActive = document.getElementById("btn-delete-active-sheet");
+  if (btnDeleteActive) btnDeleteActive.style.display = "inline-flex";
 
   // Set Transcript in active language
   updateTranscriptForLanguage();
@@ -929,6 +1090,47 @@ function setupEventListeners() {
 
   const btnEmptyUpload = document.getElementById("btn-empty-upload");
   if (btnEmptyUpload) btnEmptyUpload.addEventListener("click", () => fileInputEl.click());
+
+  // Upload & File Browser Controls (Pinned Left)
+  const btnBrowseFile = document.getElementById("btn-browse-file");
+  if (btnBrowseFile) {
+    btnBrowseFile.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fileInputEl.click();
+    });
+  }
+
+  const cameraInputEl = document.getElementById("camera-input");
+  const btnCameraSnap = document.getElementById("btn-camera-snap");
+  if (btnCameraSnap && cameraInputEl) {
+    btnCameraSnap.addEventListener("click", (e) => {
+      e.stopPropagation();
+      cameraInputEl.click();
+    });
+    cameraInputEl.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files[0]) {
+        gradeUploadedFile(e.target.files[0]);
+      }
+    });
+  }
+
+  // Restore Default Samples Button in Binder Header
+  const btnRestoreSamples = document.getElementById("btn-restore-samples");
+  if (btnRestoreSamples) {
+    btnRestoreSamples.addEventListener("click", restoreDefaultSamples);
+  }
+
+  // Delete / Remove Active Sheet Button in Stage Toolbar
+  const btnDeleteActive = document.getElementById("btn-delete-active-sheet");
+  if (btnDeleteActive) {
+    btnDeleteActive.addEventListener("click", () => {
+      if (currentSampleId) {
+        deleteAssignment(currentSampleId);
+      } else {
+        clearActiveWorksheet();
+      }
+    });
+  }
 
   // Dropzone File Upload
   dropZoneEl.addEventListener("click", () => fileInputEl.click());

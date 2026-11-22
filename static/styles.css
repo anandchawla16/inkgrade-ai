@@ -286,6 +286,103 @@ body {
   line-height: 1.4;
 }
 
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.left-fixed-badge {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.4px;
+}
+
+/* Upload & File Browser Section (Permanently on Left Side) */
+.upload-browser-section {
+  position: sticky;
+  top: 0;
+  background: var(--bg-sidebar-left);
+  z-index: 15;
+  padding-bottom: 14px;
+  border-bottom: 1.5px dashed rgba(120, 53, 15, 0.25);
+}
+
+.upload-actions-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn-browse-file, .btn-camera-snap {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.btn-browse-file {
+  background: #78350f;
+  color: #ffffff;
+  border: 1px solid #572608;
+}
+
+.btn-browse-file:hover {
+  background: #92400e;
+  transform: translateY(-1px);
+}
+
+.btn-camera-snap {
+  background: #ffffff;
+  color: #78350f;
+  border: 1.5px solid #b8aa97;
+}
+
+.btn-camera-snap:hover {
+  background: #fdfaf5;
+  border-color: #78350f;
+  transform: translateY(-1px);
+}
+
+/* Binder Header & Controls */
+.binder-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #78716c;
+  margin-left: 2px;
+}
+
+.btn-restore-samples {
+  background: transparent;
+  border: 1px solid #b8aa97;
+  color: #78350f;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-restore-samples:hover {
+  background: #ffffff;
+  border-color: #78350f;
+}
+
 /* Sample Cards (Folder Tabs) */
 .sample-cards-list {
   display: flex;
@@ -299,7 +396,7 @@ body {
   border: 1px solid var(--border-color);
   border-left: 4px solid #a89f91;
   border-radius: 8px;
-  padding: 12px 14px;
+  padding: 12px 34px 12px 14px; /* extra right padding for delete icon */
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -320,12 +417,72 @@ body {
   box-shadow: 0 4px 12px rgba(120, 53, 15, 0.12);
 }
 
+/* Card Delete Trash Button */
+.btn-card-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0.35;
+  transition: all 0.2s ease;
+  color: #dc2626;
+  line-height: 1;
+}
+
+.sample-card:hover .btn-card-delete {
+  opacity: 0.75;
+}
+
+.btn-card-delete:hover {
+  opacity: 1 !important;
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.3);
+  transform: scale(1.1);
+}
+
+.sample-card.deleting {
+  opacity: 0;
+  transform: translateX(-20px);
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.empty-binder-msg {
+  padding: 18px 12px;
+  background: #ffffff;
+  border: 1.5px dashed #b8aa97;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 12px;
+  color: #78716c;
+}
+
+.empty-binder-msg button {
+  margin-top: 8px;
+  display: inline-block;
+}
+
 .sample-card-title {
   font-family: 'Crimson Pro', serif;
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 2px;
   color: #1e293b;
+  padding-right: 4px;
 }
 
 .sample-card-subject {
@@ -347,11 +504,11 @@ body {
 .upload-zone {
   border: 2px dashed #b8aa97;
   border-radius: 10px;
-  padding: 18px 14px;
+  padding: 14px 12px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .upload-zone:hover, .upload-zone.dragover {
@@ -360,12 +517,12 @@ body {
 }
 
 .upload-icon {
-  font-size: 28px;
-  margin-bottom: 6px;
+  font-size: 26px;
+  margin-bottom: 4px;
 }
 
 .upload-text {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: #382b20;
   margin-bottom: 3px;
@@ -374,6 +531,29 @@ body {
 .upload-hint {
   font-size: 11px;
   color: #78716c;
+}
+
+/* Toolbar Delete Button */
+.btn-tool-danger {
+  background: rgba(220, 38, 38, 0.08);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+
+.btn-tool-danger:hover {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  transform: translateY(-1px);
 }
 
 .btn-primary-sm {
@@ -1404,4 +1584,23 @@ body {
 
 .progress-step.complete {
   color: #15803d;
+}
+
+/* ==========================================================================
+   Responsive & Fixed Left Layout Guarantees
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .app-layout {
+    grid-template-columns: 310px 1fr 340px;
+  }
+}
+
+@media (max-width: 960px) {
+  /* Keep upload browser & sidebar always on the left side */
+  .app-layout {
+    grid-template-columns: 290px 1fr;
+  }
+  .sidebar-right {
+    display: none;
+  }
 }
