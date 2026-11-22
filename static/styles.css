@@ -893,53 +893,44 @@ body {
 .correction-box {
   position: absolute;
   box-sizing: border-box;
-  border: 2.5px dashed var(--teacher-red);
-  border-radius: 8px;
-  background: rgba(220, 38, 38, 0.06);
+  border: 2px dashed #dc2626;
+  border-radius: 6px;
+  background: rgba(220, 38, 38, 0.02); /* Clear transparent interior so handwriting is 100% visible */
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 5;
 }
 
 .correction-box:hover, .correction-box.active {
-  background: rgba(220, 38, 38, 0.16);
+  background: rgba(220, 38, 38, 0.05);
   border-color: #b91c1c;
-  box-shadow: 0 0 14px rgba(220, 38, 38, 0.35);
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
 }
 
 /* Green Correct Box */
 .correct-box {
   position: absolute;
   box-sizing: border-box;
-  border: 2.5px dashed var(--teacher-green);
-  border-radius: 8px;
-  background: rgba(21, 128, 61, 0.06);
+  border: 2px dashed #15803d;
+  border-radius: 6px;
+  background: rgba(21, 128, 61, 0.02); /* Clear transparent interior so handwriting is 100% visible */
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 5;
 }
 
 .correct-box:hover, .correct-box.active {
-  background: rgba(21, 128, 61, 0.16);
+  background: rgba(21, 128, 61, 0.05);
   border-color: #166534;
-  box-shadow: 0 0 14px rgba(21, 128, 61, 0.35);
+  box-shadow: 0 0 10px rgba(21, 128, 61, 0.3);
 }
 
-/* Teacher Note Badges (Authentic Handwriting Sticky/Margin Callouts) */
-.teacher-note-badge {
+/* Teacher Note Badges - Positioned OUTSIDE the box so they NEVER overlap handwriting */
+.teacher-note-badge, .teacher-correct-badge {
   position: absolute;
-  background: #dc2626;
-  color: #ffffff;
-  font-family: 'Caveat', cursive;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
-  transform: rotate(-1.5deg);
   z-index: 20;
   cursor: pointer;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   line-height: 1.25;
   transition: transform 0.2s, background 0.2s;
   display: inline-flex;
@@ -947,55 +938,72 @@ body {
   gap: 5px;
   white-space: nowrap;
   pointer-events: auto;
+  border-radius: 5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.teacher-note-badge {
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #b91c1c;
 }
 
 .teacher-note-badge:hover {
   background: #b91c1c;
-  transform: scale(1.05) rotate(0deg);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(220, 38, 38, 0.35);
 }
 
 .teacher-correct-badge {
-  position: absolute;
   background: #15803d;
   color: #ffffff;
-  font-family: 'Caveat', cursive;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35);
-  transform: rotate(1deg);
-  z-index: 20;
-  cursor: pointer;
-  letter-spacing: 0.3px;
-  line-height: 1.25;
-  transition: transform 0.2s, background 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-  pointer-events: auto;
+  border: 1px solid #166534;
 }
 
 .teacher-correct-badge:hover {
   background: #166534;
-  transform: scale(1.05) rotate(0deg);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(21, 128, 61, 0.35);
 }
 
-.badge-side {
-  left: calc(100% + 10px);
-  top: 2px;
+/* Anchor Badges STRICTLY OUTSIDE the box */
+/* Top edge (sitting in blank gap above problem) */
+.badge-outside-top-left {
+  bottom: calc(100% + 5px);
+  left: 0;
 }
 
-.badge-pinned-top {
-  right: 12px;
-  top: 8px;
+.badge-outside-top-right {
+  bottom: calc(100% + 5px);
+  right: 0;
 }
 
-.note-arrow {
-  color: #fecaca;
+/* Bottom edge fallback (if problem is at very top of paper) */
+.badge-outside-bottom-left {
+  top: calc(100% + 5px);
+  left: 0;
+}
+
+.badge-outside-bottom-right {
+  top: calc(100% + 5px);
+  right: 0;
+}
+
+.note-pointer {
+  color: #fef08a;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 12px;
+}
+
+.ans-pill {
+  background: rgba(255, 255, 255, 0.22);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 600;
 }
 
 /* Telemetry Bar Directly Below Sheet Image */
@@ -1281,6 +1289,22 @@ body {
   color: #8c8273;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.pulse-attention {
+  animation: pulse-attention-glow 1.5s infinite alternate !important;
+  background: #b45309 !important;
+}
+
+@keyframes pulse-attention-glow {
+  0% {
+    box-shadow: 0 0 0 rgba(180, 83, 9, 0.4);
+    transform: scale(1);
+  }
+  100% {
+    box-shadow: 0 0 16px rgba(180, 83, 9, 0.9);
+    transform: scale(1.02);
+  }
 }
 
 .btn-voice-secondary {

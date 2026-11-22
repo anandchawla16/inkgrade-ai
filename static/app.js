@@ -679,7 +679,7 @@ function drawAnnotations(annotations) {
 
     const isCorrect = ann.status === "correct";
 
-    // 1. Create Bounding Box
+    // 1. Create Bounding Box (Clean non-intrusive dashed border with transparent interior)
     const boxEl = document.createElement("div");
     boxEl.className = isCorrect ? "correct-box" : "correction-box";
     boxEl.id = `box-ann-${idx}`;
@@ -689,29 +689,32 @@ function drawAnnotations(annotations) {
     boxEl.style.height = `${heightPct}%`;
 
     // 2. Create Floating Teacher Badge
+    // Anchored STRICTLY OUTSIDE the box so it NEVER overlaps student handwriting!
     const badgeEl = document.createElement("div");
     badgeEl.className = isCorrect ? "teacher-correct-badge" : "teacher-note-badge";
 
     if (isCorrect) {
       const answerDisplay = ann.student_answer || ann.expected_answer || "";
-      const answerSnippet = answerDisplay ? ` Ans = ${answerDisplay}` : "";
-      badgeEl.innerHTML = `✓ <strong>Q${ann.question_number}: Correct!${answerSnippet}</strong>`;
+      const answerSnippet = answerDisplay ? ` <span class="ans-pill">Ans = ${answerDisplay}</span>` : "";
+      badgeEl.innerHTML = `✓ <strong>Q${ann.question_number}: Correct!</strong>${answerSnippet}`;
+      // Position above top-right corner of box (in empty gap above problem)
+      if (ymin < 50) {
+        badgeEl.classList.add("badge-outside-bottom-right");
+      } else {
+        badgeEl.classList.add("badge-outside-top-right");
+      }
     } else {
-      badgeEl.innerHTML = `<span class="note-arrow">←</span> <strong>Q${ann.question_number}:</strong> ${ann.teacher_note}`;
+      badgeEl.innerHTML = `<span class="note-pointer">↳</span> <strong>Q${ann.question_number}:</strong> ${ann.teacher_note}`;
+      // Position above top-left corner of box (in empty gap above problem)
+      if (ymin < 50) {
+        badgeEl.classList.add("badge-outside-bottom-left");
+      } else {
+        badgeEl.classList.add("badge-outside-top-left");
+      }
     }
 
-    // 3. Anchor Badge:
-    // If xmax <= 680: place in margin to the right (badge-side)
-    // If xmax > 680: pin inside the top-right corner of the box (badge-pinned-top) so it never overlaps other questions
-    if (xmax <= 680) {
-      badgeEl.classList.add("badge-side");
-    } else {
-      badgeEl.classList.add("badge-pinned-top");
-    }
-
-    // Interactive clicks (localized to active language)
-    boxEl.addEventListener("click", (e) => {
-      e.stopPropagation();
+    // Interactive clicks (localized to active language with instant audio streaming)
+    const playQuestionAudio = () => {
       highlightAnnotation(idx);
       let exp = ann.spoken_explanation;
       if (currentSelectedLang === "hi" && ann.spoken_explanation_hi) {
@@ -719,22 +722,21 @@ function drawAnnotations(annotations) {
       } else if (currentSelectedLang === "mr" && ann.spoken_explanation_mr) {
         exp = ann.spoken_explanation_mr;
       }
-      speakText(exp, currentSelectedLang);
+      const directAudioUrl = `/audio/q${ann.question_number}_${currentSelectedVoiceId}.mp3`;
+      speakText(exp, currentSelectedLang, currentSelectedVoiceId, directAudioUrl);
+    };
+
+    boxEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      playQuestionAudio();
     });
 
     badgeEl.addEventListener("click", (e) => {
       e.stopPropagation();
-      highlightAnnotation(idx);
-      let exp = ann.spoken_explanation;
-      if (currentSelectedLang === "hi" && ann.spoken_explanation_hi) {
-        exp = ann.spoken_explanation_hi;
-      } else if (currentSelectedLang === "mr" && ann.spoken_explanation_mr) {
-        exp = ann.spoken_explanation_mr;
-      }
-      speakText(exp, currentSelectedLang);
+      playQuestionAudio();
     });
 
-    // Pinned directly inside box so it CAN NEVER drift or desync!
+    // Pinned directly inside box container but positioned outside its borders
     boxEl.appendChild(badgeEl);
     annotationOverlayEl.appendChild(boxEl);
   });
@@ -819,20 +821,73 @@ function getBestVoiceForSelection(personaId, langCode) {
   return voices.find(v => v.lang.startsWith("en")) || voices[0];
 }
 
+// Helper: Convert Base64 Audio to Native Blob URL (Fastest, zero-copy native browser playback)
+function base64ToBlobUrl(base64Data, mimeType = "audio/mp3") {
+  const binaryString = atob(base64Data);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  const blob = new Blob([bytes], { type: mimeType });
+  return URL.createObjectURL(blob);
+}
+
 // Universal Voice Synthesis Engine (Server Native MP3 Streaming + Local Fallback)
-async function speakText(text, targetLang, targetVoice) {
+async function speakText(text, targetLang, targetVoice, directAudioUrl) {
   stopVoice();
-  if (!text) return;
+  if (!text && !directAudioUrl) return;
 
   const lang = targetLang || currentSelectedLang || "en";
-  const voiceId = targetVoice || currentSelectedVoiceId || "en-female";
+  const voiceId = targetVoice || currentSelectedVoiceId || "en-male";
 
-  // Visual state
+  // Visual state: Indicate speaking & animate waveform
   pulseIndicatorEl.classList.add("active");
   waveformBoxEl.classList.add("playing");
+  voiceStatusEl.textContent = "Speaking...";
   btnPlayVoiceEl.style.display = "none";
   btnStopVoiceEl.style.display = "flex";
-  voiceStatusEl.textContent = "Speaking...";
+
+  // Check for pre-cached static MP3 (lightning fast, zero network lag, zero tunnel drops)
+  let staticUrl = directAudioUrl;
+  if (!staticUrl && currentSampleId === "user_math_photo.jpg") {
+    if (text.includes("problem 3") || text.includes("नमस्ते") || text.includes("नमस्कार")) {
+      staticUrl = `/audio/walkthrough_${voiceId}.mp3`;
+    }
+  }
+
+  if (staticUrl) {
+    if (currentAudioElement) {
+      try {
+        currentAudioElement.pause();
+        currentAudioElement.currentTime = 0;
+      } catch (_) {}
+    }
+    currentAudioElement = new Audio(staticUrl);
+    currentAudioElement.onplay = () => {
+      voiceStatusEl.textContent = "Speaking...";
+      waveformBoxEl.classList.add("playing");
+      pulseIndicatorEl.classList.add("active");
+      btnPlayVoiceEl.style.display = "none";
+      btnStopVoiceEl.style.display = "flex";
+    };
+    currentAudioElement.onended = () => resetVoiceUI();
+    currentAudioElement.onerror = () => resetVoiceUI();
+
+    try {
+      await currentAudioElement.play();
+      return;
+    } catch (playErr) {
+      console.warn("Static audio play() blocked by browser autoplay policy:", playErr);
+      voiceStatusEl.textContent = "Click Play 🔊";
+      pulseIndicatorEl.classList.remove("active");
+      waveformBoxEl.classList.remove("playing");
+      btnPlayVoiceEl.style.display = "inline-flex";
+      btnStopVoiceEl.style.display = "none";
+      btnPlayVoiceEl.classList.add("pulse-attention");
+      return;
+    }
+  }
 
   // 1. Try High-Quality Server Native Speech (guarantees authentic Hindi, Marathi, and English voice without OS dependency)
   try {
@@ -855,11 +910,43 @@ async function speakText(text, targetLang, targetVoice) {
             currentAudioElement.currentTime = 0;
           } catch (_) {}
         }
-        currentAudioElement = new Audio(`data:${data.mime_type || "audio/mp3"};base64,${data.audio_base64}`);
-        currentAudioElement.onended = () => resetVoiceUI();
-        currentAudioElement.onerror = () => resetVoiceUI();
-        await currentAudioElement.play();
-        return;
+
+        const blobUrl = base64ToBlobUrl(data.audio_base64, data.mime_type || "audio/mp3");
+        currentAudioElement = new Audio(blobUrl);
+
+        currentAudioElement.onplay = () => {
+          voiceStatusEl.textContent = "Speaking...";
+          waveformBoxEl.classList.add("playing");
+          pulseIndicatorEl.classList.add("active");
+          btnPlayVoiceEl.style.display = "none";
+          btnStopVoiceEl.style.display = "flex";
+        };
+
+        currentAudioElement.onended = () => {
+          URL.revokeObjectURL(blobUrl);
+          resetVoiceUI();
+        };
+
+        currentAudioElement.onerror = (e) => {
+          console.warn("Audio element playback error:", e);
+          URL.revokeObjectURL(blobUrl);
+          resetVoiceUI();
+        };
+
+        try {
+          await currentAudioElement.play();
+          return;
+        } catch (playErr) {
+          console.warn("Audio play() blocked by browser autoplay policy:", playErr);
+          // Browser requires user interaction: show clear prompt!
+          voiceStatusEl.textContent = "Click Play 🔊";
+          pulseIndicatorEl.classList.remove("active");
+          waveformBoxEl.classList.remove("playing");
+          btnPlayVoiceEl.style.display = "inline-flex";
+          btnStopVoiceEl.style.display = "none";
+          btnPlayVoiceEl.classList.add("pulse-attention");
+          return;
+        }
       }
     }
   } catch (err) {
@@ -883,6 +970,12 @@ async function speakText(text, targetLang, targetVoice) {
   } else {
     currentSpeechUtterance.lang = lang === "hi" ? "hi-IN" : (lang === "mr" ? "mr-IN" : "en-US");
   }
+
+  currentSpeechUtterance.onstart = () => {
+    voiceStatusEl.textContent = "Speaking...";
+    waveformBoxEl.classList.add("playing");
+    pulseIndicatorEl.classList.add("active");
+  };
 
   currentSpeechUtterance.onend = () => resetVoiceUI();
   currentSpeechUtterance.onerror = (e) => {
@@ -1003,6 +1096,7 @@ function initSpeechRecognition() {
 function setupEventListeners() {
   // Voice Controls
   btnPlayVoiceEl.addEventListener("click", () => {
+    btnPlayVoiceEl.classList.remove("pulse-attention");
     if (currentWorksheetData) {
       let script = currentWorksheetData.voice_script || "";
       if (currentSelectedLang === "hi" && currentWorksheetData.voice_script_hi) {
@@ -1010,7 +1104,7 @@ function setupEventListeners() {
       } else if (currentSelectedLang === "mr" && currentWorksheetData.voice_script_mr) {
         script = currentWorksheetData.voice_script_mr;
       }
-      speakText(script, currentSelectedLang);
+      speakText(script, currentSelectedLang, currentSelectedVoiceId);
     }
   });
 
@@ -1118,6 +1212,22 @@ function setupEventListeners() {
   const btnRestoreSamples = document.getElementById("btn-restore-samples");
   if (btnRestoreSamples) {
     btnRestoreSamples.addEventListener("click", restoreDefaultSamples);
+  }
+
+  // Toggle Teacher Markings Button (View pure original sheet vs markings)
+  const btnToggleMarkings = document.getElementById("btn-toggle-markings");
+  let markingsVisible = true;
+  if (btnToggleMarkings) {
+    btnToggleMarkings.addEventListener("click", () => {
+      markingsVisible = !markingsVisible;
+      if (annotationOverlayEl) {
+        annotationOverlayEl.style.display = markingsVisible ? "block" : "none";
+      }
+      btnToggleMarkings.innerHTML = markingsVisible 
+        ? "<span>👁️</span> Markings: ON" 
+        : "<span style='opacity:0.6'>👁️‍🗨️</span> Markings: OFF";
+      btnToggleMarkings.style.background = markingsVisible ? "" : "rgba(255,255,255,0.12)";
+    });
   }
 
   // Delete / Remove Active Sheet Button in Stage Toolbar

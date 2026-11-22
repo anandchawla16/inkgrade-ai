@@ -28,14 +28,17 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TEST_SHEETS_DIR = os.path.join(BASE_DIR, "test_sheets")
 UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
+AUDIO_DIR = os.path.join(STATIC_DIR, "audio")
 
 os.makedirs(TEST_SHEETS_DIR, exist_ok=True)
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(STATIC_DIR, exist_ok=True)
+os.makedirs(AUDIO_DIR, exist_ok=True)
 
 # Mount static asset folders
 app.mount("/test_sheets", StaticFiles(directory=TEST_SHEETS_DIR), name="test_sheets")
 app.mount("/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
+app.mount("/audio", StaticFiles(directory=AUDIO_DIR), name="audio")
 
 class QuestionRequest(BaseModel):
     user_query: str
@@ -195,7 +198,21 @@ async def ask_teacher(req: QuestionRequest):
     except Exception as e:
         return {"reply": f"I heard your question: {query}. Let's look at the red annotations on your paper and re-check that step!"}
 
+import json
+
 _tts_cache = {}
+CACHE_FILE = os.path.join(BASE_DIR, "tts_cache.json")
+if os.path.exists(CACHE_FILE):
+    try:
+        with open(CACHE_FILE, "r", encoding="utf-8") as f:
+            raw_cache = json.load(f)
+            for k, v in raw_cache.items():
+                if "___" in k:
+                    txt, v_name = k.split("___", 1)
+                    _tts_cache[(txt.strip(), v_name.strip())] = v
+        print(f"✅ Loaded {len(_tts_cache)} pre-cached neural audio clips from disk!")
+    except Exception as e:
+        print(f"Failed loading TTS cache: {e}")
 
 VOICE_MAP = {
     "en-female": "en-US-JennyNeural",           # Warm, female English teacher (Mrs. Davis)
