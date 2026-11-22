@@ -1006,6 +1006,188 @@ body {
   font-weight: 600;
 }
 
+/* ==========================================================================
+   Feedback Design & Font Themes (Red & Green Feedback Styling)
+   ========================================================================== */
+
+/* Style Selector in Toolbar */
+.style-selector-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 3px 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.style-select-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #78350f;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.style-select {
+  background: transparent;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  outline: none;
+}
+
+.style-select option {
+  background: #fff;
+  color: #1e293b;
+}
+
+/* 1. Theme: Modern Pill (Default) */
+.theme-capsule .teacher-note-badge {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 20px;
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #b91c1c;
+  padding: 3px 10px;
+  box-shadow: 0 3px 8px rgba(220, 38, 38, 0.25);
+  transform: none;
+}
+
+.theme-capsule .teacher-correct-badge {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 20px;
+  background: #15803d;
+  color: #ffffff;
+  border: 1px solid #166534;
+  padding: 3px 10px;
+  box-shadow: 0 3px 8px rgba(21, 128, 61, 0.25);
+  transform: none;
+}
+
+/* 2. Theme: Red Pen Handwriting Script (Caveat) */
+.theme-script .teacher-note-badge {
+  font-family: 'Caveat', cursive, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 18px 4px 16px 5px;
+  background: #dc2626;
+  color: #ffffff;
+  border: 1.5px solid #b91c1c;
+  padding: 3px 11px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+  transform: rotate(-1.5deg);
+  letter-spacing: 0.3px;
+}
+
+.theme-script .teacher-correct-badge {
+  font-family: 'Caveat', cursive, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 4px 18px 5px 16px;
+  background: #15803d;
+  color: #ffffff;
+  border: 1.5px solid #166534;
+  padding: 3px 11px;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.35);
+  transform: rotate(1.5deg);
+  letter-spacing: 0.3px;
+}
+
+.theme-script .correction-box {
+  border: 2.5px dashed #dc2626;
+  border-radius: 14px 4px 16px 5px;
+}
+
+.theme-script .correct-box {
+  border: 2.5px dashed #15803d;
+  border-radius: 4px 14px 5px 16px;
+}
+
+/* 3. Theme: Teacher Desk Post-it Memo (Crimson Pro Serif) */
+.theme-sticky .teacher-note-badge {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: 4px;
+  background: #fff1f2;
+  color: #991b1b;
+  border: 1px solid #fecdd3;
+  border-left: 4px solid #dc2626;
+  padding: 4px 10px;
+  box-shadow: 0 4px 12px rgba(153, 27, 27, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transform: rotate(-1deg);
+}
+
+.theme-sticky .teacher-correct-badge {
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: 4px;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  border-left: 4px solid #15803d;
+  padding: 4px 10px;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transform: rotate(1deg);
+}
+
+.theme-sticky .correction-box {
+  border: 2px dashed #f43f5e;
+}
+
+.theme-sticky .correct-box {
+  border: 2px dashed #22c55e;
+}
+
+/* 4. Theme: Academic Rubber Stamp (JetBrains Mono) */
+.theme-stamp .teacher-note-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 3px;
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border: 2px solid #dc2626;
+  padding: 3px 8px;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.2);
+  transform: rotate(-2deg);
+  letter-spacing: 0.6px;
+}
+
+.theme-stamp .teacher-correct-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border-radius: 3px;
+  background: rgba(21, 128, 61, 0.1);
+  color: #15803d;
+  border: 2px solid #15803d;
+  padding: 3px 8px;
+  box-shadow: 0 2px 6px rgba(21, 128, 61, 0.2);
+  transform: rotate(2deg);
+  letter-spacing: 0.6px;
+}
+
+.theme-stamp .correction-box {
+  border: 2px dashed #dc2626;
+}
+
+.theme-stamp .correct-box {
+  border: 2px dashed #15803d;
+}
+
 /* Telemetry Bar Directly Below Sheet Image */
 .sheet-telemetry-bar {
   width: 100%;

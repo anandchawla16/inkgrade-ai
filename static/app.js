@@ -5,6 +5,7 @@ let currentSpeechUtterance = null;
 let currentAudioElement = null;
 let currentSelectedLang = "en"; // "en", "hi", "mr"
 let currentSelectedVoiceId = "en-male";
+let currentFeedbackStyle = localStorage.getItem("FEEDBACK_STYLE") || "capsule";
 let speechRecognition = null;
 let apiKey = localStorage.getItem("GEMINI_API_KEY") || "";
 
@@ -54,10 +55,34 @@ const btnClearKeyEl = document.getElementById("btn-clear-key");
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
   updateApiKeyDisplay();
+  applyFeedbackStyle(currentFeedbackStyle);
   loadSampleSheets();
   setupEventListeners();
   initSpeechRecognition();
 });
+
+// Dynamic Feedback Design & Font Switcher
+function applyFeedbackStyle(styleName) {
+  currentFeedbackStyle = styleName;
+  localStorage.setItem("FEEDBACK_STYLE", styleName);
+
+  const validThemes = ["theme-capsule", "theme-script", "theme-sticky", "theme-stamp"];
+  const targetTheme = `theme-${styleName}`;
+
+  if (annotationOverlayEl) {
+    annotationOverlayEl.classList.remove(...validThemes);
+    annotationOverlayEl.classList.add(targetTheme);
+  }
+  if (sheetWrapperEl) {
+    sheetWrapperEl.classList.remove(...validThemes);
+    sheetWrapperEl.classList.add(targetTheme);
+  }
+
+  const sel = document.getElementById("feedback-style-select");
+  if (sel && sel.value !== styleName) {
+    sel.value = styleName;
+  }
+}
 
 function updateApiKeyDisplay() {
   if (apiKey) {
@@ -668,6 +693,15 @@ function drawAnnotations(annotations) {
   annotationOverlayEl.innerHTML = "";
   if (!annotations || !annotations.length) return;
 
+  // Ensure current design & font theme is applied to overlay & wrapper
+  const validThemes = ["theme-capsule", "theme-script", "theme-sticky", "theme-stamp"];
+  annotationOverlayEl.classList.remove(...validThemes);
+  annotationOverlayEl.classList.add(`theme-${currentFeedbackStyle}`);
+  if (sheetWrapperEl) {
+    sheetWrapperEl.classList.remove(...validThemes);
+    sheetWrapperEl.classList.add(`theme-${currentFeedbackStyle}`);
+  }
+
   annotations.forEach((ann, idx) => {
     const [ymin, xmin, ymax, xmax] = ann.box_2d || [100, 100, 200, 400];
     
@@ -1214,6 +1248,15 @@ function setupEventListeners() {
   const btnRestoreSamples = document.getElementById("btn-restore-samples");
   if (btnRestoreSamples) {
     btnRestoreSamples.addEventListener("click", restoreDefaultSamples);
+  }
+
+  // Feedback Design & Font Switcher (Dropdown Listener)
+  const feedbackStyleSelectEl = document.getElementById("feedback-style-select");
+  if (feedbackStyleSelectEl) {
+    feedbackStyleSelectEl.value = currentFeedbackStyle;
+    feedbackStyleSelectEl.addEventListener("change", (e) => {
+      applyFeedbackStyle(e.target.value);
+    });
   }
 
   // Toggle Teacher Markings Button (View pure original sheet vs markings)

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Crimson+Pro:ital,wght@0,500;0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=cf_audio_instant_v4">
+  <link rel="stylesheet" href="/styles.css?v=feedback_styles_v5">
 </head>
 <body>
 
@@ -180,6 +180,17 @@
           </div>
         </div>
         <div class="toolbar-actions">
+          <!-- 🎨 Feedback Design & Font Style Switcher -->
+          <div class="style-selector-wrap" title="Change design & font style for red/green teacher feedback">
+            <label for="feedback-style-select" class="style-select-label">🎨 Font & Style:</label>
+            <select id="feedback-style-select" class="style-select">
+              <option value="capsule" selected>⚡ Modern Pill (Plus Jakarta Sans)</option>
+              <option value="script">✒️ Red Pen Script (Caveat Cursive)</option>
+              <option value="sticky">🏷️ Post-it Memo (Crimson Serif)</option>
+              <option value="stamp">📜 Rubber Stamp (JetBrains Mono)</option>
+            </select>
+          </div>
+
           <button id="btn-toggle-markings" class="btn-tool" title="Toggle teacher markings on/off to view original handwriting clearly">
             <span>👁️</span> Markings: ON
           </button>
@@ -401,6 +412,6 @@
     </div>
   </div>
 
-  <script src="/app.js?v=cf_audio_instant_v4"></script>
+  <script src="/app.js?v=feedback_styles_v5"></script>
 </body>
 </html>
