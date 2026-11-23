@@ -61,26 +61,14 @@ document.addEventListener("DOMContentLoaded", () => {
   initSpeechRecognition();
 });
 
-// Dynamic Feedback Design & Font Switcher
-function applyFeedbackStyle(styleName) {
-  currentFeedbackStyle = styleName;
-  localStorage.setItem("FEEDBACK_STYLE_V3", styleName);
-
-  const validThemes = ["theme-capsule", "theme-script", "theme-sticky", "theme-stamp"];
-  const targetTheme = `theme-${styleName}`;
-
+// Fixed Red Pen Script (Caveat Cursive) Default Styling
+function applyFeedbackStyle() {
+  currentFeedbackStyle = "script";
   if (annotationOverlayEl) {
-    annotationOverlayEl.classList.remove(...validThemes);
-    annotationOverlayEl.classList.add(targetTheme);
+    annotationOverlayEl.classList.add("theme-script");
   }
   if (sheetWrapperEl) {
-    sheetWrapperEl.classList.remove(...validThemes);
-    sheetWrapperEl.classList.add(targetTheme);
-  }
-
-  const sel = document.getElementById("feedback-style-select");
-  if (sel && sel.value !== styleName) {
-    sel.value = styleName;
+    sheetWrapperEl.classList.add("theme-script");
   }
 }
 
@@ -742,10 +730,19 @@ function drawAnnotations(annotations) {
 
     if (isCorrect) {
       const answerDisplay = ann.student_answer || ann.expected_answer || "";
-      const answerSnippet = answerDisplay ? ` <span class="ans-pill">Ans = ${answerDisplay}</span>` : "";
+      const answerSnippet = answerDisplay ? `<br><span class="ans-pill">Ans = ${answerDisplay}</span>` : "";
       badgeEl.innerHTML = `✓ <strong>Q${ann.question_number}: Correct!</strong>${answerSnippet}`;
     } else {
-      badgeEl.innerHTML = `<span class="note-pointer">↳</span> <strong>Q${ann.question_number}:</strong> ${ann.teacher_note}`;
+      let noteText = ann.teacher_note || "";
+      let formattedNote = noteText;
+      if (noteText.includes("!")) {
+        const parts = noteText.split("!");
+        formattedNote = `${parts[0]}!<br><span class="note-math-step">${parts.slice(1).join("!").trim()}</span>`;
+      } else if (noteText.includes(":")) {
+        const parts = noteText.split(":");
+        formattedNote = `${parts[0]}:<br><span class="note-math-step">${parts.slice(1).join(":").trim()}</span>`;
+      }
+      badgeEl.innerHTML = `<span class="note-pointer">↳</span> <strong>Q${ann.question_number}:</strong> ${formattedNote}`;
     }
 
     // Interactive clicks (localized to active language with instant audio streaming)
@@ -880,8 +877,10 @@ async function speakText(text, targetLang, targetVoice, directAudioUrl) {
   pulseIndicatorEl.classList.add("active");
   waveformBoxEl.classList.add("playing");
   voiceStatusEl.textContent = "Speaking...";
-  btnPlayVoiceEl.style.display = "none";
-  btnStopVoiceEl.style.display = "flex";
+  btnStopVoiceEl.disabled = false;
+  btnPlayVoiceEl.disabled = true;
+  voiceBtnIconEl.textContent = "🔊";
+  voiceBtnTextEl.textContent = "Teacher Explaining...";
 
   // Check for pre-cached static MP3 (lightning fast, zero network lag, zero tunnel drops)
   let staticUrl = directAudioUrl;
@@ -903,8 +902,10 @@ async function speakText(text, targetLang, targetVoice, directAudioUrl) {
       voiceStatusEl.textContent = "Speaking...";
       waveformBoxEl.classList.add("playing");
       pulseIndicatorEl.classList.add("active");
-      btnPlayVoiceEl.style.display = "none";
-      btnStopVoiceEl.style.display = "flex";
+      btnStopVoiceEl.disabled = false;
+      btnPlayVoiceEl.disabled = true;
+      voiceBtnIconEl.textContent = "🔊";
+      voiceBtnTextEl.textContent = "Teacher Explaining...";
     };
     currentAudioElement.onended = () => resetVoiceUI();
     currentAudioElement.onerror = () => resetVoiceUI();
@@ -953,8 +954,10 @@ async function speakText(text, targetLang, targetVoice, directAudioUrl) {
           voiceStatusEl.textContent = "Speaking...";
           waveformBoxEl.classList.add("playing");
           pulseIndicatorEl.classList.add("active");
-          btnPlayVoiceEl.style.display = "none";
-          btnStopVoiceEl.style.display = "flex";
+          btnStopVoiceEl.disabled = false;
+          btnPlayVoiceEl.disabled = true;
+          voiceBtnIconEl.textContent = "🔊";
+          voiceBtnTextEl.textContent = "Teacher Explaining...";
         };
 
         currentAudioElement.onended = () => {
@@ -1047,8 +1050,11 @@ function resetVoiceUI() {
   voiceStatusEl.textContent = "Ready";
   pulseIndicatorEl.classList.remove("active");
   waveformBoxEl.classList.remove("playing");
-  btnPlayVoiceEl.style.display = "inline-flex";
-  btnStopVoiceEl.style.display = "none";
+  btnStopVoiceEl.disabled = true;
+  btnPlayVoiceEl.disabled = false;
+  voiceBtnIconEl.textContent = "▶";
+  voiceBtnTextEl.textContent = "Listen to Teacher Feedback";
+  btnPlayVoiceEl.classList.remove("pulse-attention");
 }
 
 // Two-way Voice: Student Asks Teacher Follow-up
@@ -1248,15 +1254,6 @@ function setupEventListeners() {
   const btnRestoreSamples = document.getElementById("btn-restore-samples");
   if (btnRestoreSamples) {
     btnRestoreSamples.addEventListener("click", restoreDefaultSamples);
-  }
-
-  // Feedback Design & Font Switcher (Dropdown Listener)
-  const feedbackStyleSelectEl = document.getElementById("feedback-style-select");
-  if (feedbackStyleSelectEl) {
-    feedbackStyleSelectEl.value = currentFeedbackStyle;
-    feedbackStyleSelectEl.addEventListener("change", (e) => {
-      applyFeedbackStyle(e.target.value);
-    });
   }
 
   // Toggle Teacher Markings Button (View pure original sheet vs markings)

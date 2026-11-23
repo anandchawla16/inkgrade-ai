@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Crimson+Pro:ital,wght@0,500;0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=v8_perfect_alignment">
+  <link rel="stylesheet" href="/styles.css?v=v12_feedback_height_no_buildathon">
 </head>
 <body>
 
@@ -41,9 +41,6 @@
       <button id="btn-api-key" class="btn-secondary" title="Configure Gemini API Key">
         <span>🔑</span> <span id="api-key-label">API Key: Demo Mode</span>
       </button>
-      <a href="https://github.com" target="_blank" class="btn-ghost" title="Gemini Buildathon">
-        🏆 Gemini Buildathon
-      </a>
     </div>
   </header>
 
@@ -180,17 +177,6 @@
           </div>
         </div>
         <div class="toolbar-actions">
-          <!-- 🎨 Feedback Design & Font Style Switcher -->
-          <div class="style-selector-wrap" title="Change design & font style for red/green teacher feedback">
-            <label for="feedback-style-select" class="style-select-label">🎨 Font & Style:</label>
-            <select id="feedback-style-select" class="style-select">
-              <option value="script" selected>✒️ Red Pen Script (Caveat Cursive)</option>
-              <option value="capsule">⚡ Modern Pill (Plus Jakarta Sans)</option>
-              <option value="sticky">🏷️ Post-it Memo (Crimson Serif)</option>
-              <option value="stamp">📜 Rubber Stamp (JetBrains Mono)</option>
-            </select>
-          </div>
-
           <button id="btn-toggle-markings" class="btn-tool" title="Toggle teacher markings on/off to view original handwriting clearly">
             <span>👁️</span> Markings: ON
           </button>
@@ -335,20 +321,25 @@
         </select>
       </div>
 
-      <!-- Animated Audio Waveform -->
-      <div class="waveform-container" id="waveform-box">
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
-        <div class="waveform-bar"></div>
+      <!-- Sound Bar & Stop Button Row -->
+      <div class="waveform-stop-row">
+        <div class="waveform-container" id="waveform-box">
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+          <div class="waveform-bar"></div>
+        </div>
+        <button id="btn-stop-voice" class="btn-stop-compact" title="Stop Audio Playback" disabled>
+          ⏹ Stop
+        </button>
       </div>
 
       <!-- Voice Controls -->
@@ -357,23 +348,9 @@
           <span id="voice-btn-icon">▶</span>
           <span id="voice-btn-text">Listen to Teacher Feedback</span>
         </button>
-        <button id="btn-stop-voice" class="btn-voice-secondary" style="display: none;">
-          ⏹ Stop
-        </button>
       </div>
 
-      <!-- Live Spoken Transcript -->
-      <div class="transcript-section">
-        <div class="transcript-header">
-          <span>Spoken Feedback Transcript</span>
-          <span class="live-pill">Interactive</span>
-        </div>
-        <div class="transcript-body" id="transcript-body">
-          <p class="transcript-placeholder">Select a worksheet above to hear the teacher's personalized spoken walkthrough.</p>
-        </div>
-      </div>
-
-      <!-- Two-Way Voice: Talk to the Teacher -->
+      <!-- Two-Way Voice: Talk to the Teacher (Moved UP so it's always in direct view!) -->
       <div class="talk-back-section">
         <div class="talk-back-label">Ask the Teacher a Question</div>
         <div class="talk-back-input-group">
@@ -386,6 +363,17 @@
           </button>
         </div>
         <div class="mic-status" id="mic-status">Press 🎙️ or type to ask follow-up questions</div>
+      </div>
+
+      <!-- Live Spoken Transcript -->
+      <div class="transcript-section">
+        <div class="transcript-header">
+          <span>Spoken Feedback Transcript</span>
+          <span class="live-pill">Interactive</span>
+        </div>
+        <div class="transcript-body" id="transcript-body">
+          <p class="transcript-placeholder">Select a worksheet above to hear the teacher's personalized spoken walkthrough.</p>
+        </div>
       </div>
     </aside>
 
@@ -412,6 +400,6 @@
     </div>
   </div>
 
-  <script src="/app.js?v=v8_perfect_alignment"></script>
+  <script src="/app.js?v=v12_feedback_height_no_buildathon"></script>
 </body>
 </html>
