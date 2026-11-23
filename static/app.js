@@ -731,14 +731,13 @@ function drawAnnotations(annotations) {
     const xmaxPct = Number(leftPct) + Number(widthPct);
     const yminPct = Number(topPct);
 
-    // If there is blank margin space on the right (box ends at or before 76% width),
+    // If there is blank margin space on the right (box ends at or before 78% width),
     // place badge in the empty right margin (Zero Overlap with Question or Answer!)
-    if (xmaxPct <= 76) {
+    if (xmaxPct <= 78) {
       badgeEl.classList.add("badge-margin-right");
-    } else if (yminPct >= 10) {
-      badgeEl.classList.add(isCorrect ? "badge-outside-top-right" : "badge-outside-top-left");
     } else {
-      badgeEl.classList.add(isCorrect ? "badge-outside-bottom-right" : "badge-outside-bottom-left");
+      // For wide / full-width problems, place badge inside bottom-right where there is clear blank paper
+      badgeEl.classList.add("badge-inside-bottom-right");
     }
 
     if (isCorrect) {
