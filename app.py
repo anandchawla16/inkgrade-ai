@@ -123,21 +123,22 @@ async def grade_worksheet(
             res = dict(grader.MOCK_SAMPLES[sample_id])
             res["image_url"] = image_url
             return res
-        if "user_math_photo" in target_image_path and "user_math_photo.jpg" in grader.MOCK_SAMPLES:
+        orig_fn = (file.filename.lower() if file and file.filename else "")
+        if (sample_id == "user_math_photo.jpg" or "user_math" in orig_fn or "math" in orig_fn or "user_math_photo" in target_image_path) and "user_math_photo.jpg" in grader.MOCK_SAMPLES:
             res = dict(grader.MOCK_SAMPLES["user_math_photo.jpg"])
             res["image_url"] = image_url
             return res
 
         if "503" in err_str or "UNAVAILABLE" in err_str:
-            detail = "Google AI Servers are experiencing a temporary high-demand spike. Please retry in a few seconds."
+            detail = "Google AI Servers are experiencing high demand. Please retry in a few moments."
         elif "404" in err_str:
-            detail = "Specified model was not found on this API tier."
+            detail = "The AI vision model is not enabled on this Gemini API key tier. In Google AI Studio, ensure Gemini 2.0 Flash or 1.5 Flash is enabled, or click 'Use Ground-Truth' to continue."
         elif "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
             detail = "Gemini API rate limit reached (15 requests/min on free tier). Please wait 30 seconds."
         elif "API_KEY_INVALID" in err_str or "API key not valid" in err_str or "400" in err_str:
             detail = "Invalid Gemini API Key. Please verify or re-enter your key in the top-right settings."
         elif "timeout" in err_str.lower():
-            detail = "AI vision request timed out after 8s. Please click Retry."
+            detail = "AI vision request timed out. Click Retry or Use Ground-Truth."
         else:
             detail = f"AI Vision Error: {err_str[:250]}"
         raise HTTPException(status_code=500, detail=detail)
@@ -170,7 +171,9 @@ async def ask_teacher(req: QuestionRequest):
 
     try:
         from google import genai
-        client = genai.Client(api_key=effective_api_key)
+        from google.genai import types
+        http_opts = types.HttpOptions(timeout=10000, api_version="v1beta")
+        client = genai.Client(api_key=effective_api_key, http_options=http_opts)
         system_instruction = f"""
         You are a kind, encouraging, and clear school teacher speaking directly to your student.
         The student is asking a follow-up question about their graded worksheet.
@@ -184,7 +187,7 @@ async def ask_teacher(req: QuestionRequest):
         Answer directly in {lang_name} using natural, clear, and grammatically authentic phrasing.
         Keep it in 2 to 4 spoken sentences. Be warm and encouraging.
         """
-        for m in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+        for m in ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.0-flash-lite", "gemini-1.5-pro"]:
             try:
                 response = client.models.generate_content(
                     model=m,

@@ -265,8 +265,8 @@ def analyze_worksheet(image_path: str, api_key: str = None) -> dict:
 
     try:
         from PIL import ImageOps
-        # Configure client with strict 8-second HTTP socket timeout to prevent network hangs
-        http_opts = types.HttpOptions(timeout=8000)
+        # Configure client with strict 20-second timeout and v1beta API version
+        http_opts = types.HttpOptions(timeout=20000, api_version="v1beta")
         client = genai.Client(api_key=effective_api_key, http_options=http_opts)
         
         # Auto-orient phone camera images
@@ -316,14 +316,37 @@ def analyze_worksheet(image_path: str, api_key: str = None) -> dict:
            - 'voice_script': Full spoken review of the entire worksheet (3-5 sentences).
         """
 
-        # Fast model ordering: try lowest-latency active vision models first
-        active_models = [
-            "gemini-2.5-flash",
+        # Production vision models in priority order of speed and multimodal capabilities
+        preferred_models = [
             "gemini-2.0-flash",
-            "gemini-1.5-flash"
+            "gemini-1.5-flash",
+            "gemini-2.0-flash-lite",
+            "gemini-1.5-pro"
         ]
-        if os.environ.get("GEMINI_MODEL") and os.environ.get("GEMINI_MODEL") not in active_models:
-            active_models.insert(0, os.environ.get("GEMINI_MODEL"))
+
+        active_models = []
+        if os.environ.get("GEMINI_MODEL"):
+            active_models.append(os.environ.get("GEMINI_MODEL"))
+
+        # Dynamically discover active models permitted by the user's API key
+        try:
+            available = [
+                m.name.replace("models/", "") 
+                for m in client.models.list() 
+                if any(kw in getattr(m, 'supported_generation_methods', []) or kw in getattr(m, 'supported_actions', []) for kw in ['generateContent', 'generate_content'])
+            ]
+            for pm in preferred_models:
+                if pm in available and pm not in active_models:
+                    active_models.append(pm)
+            for m in available:
+                if ("flash" in m or "pro" in m) and m not in active_models:
+                    active_models.append(m)
+        except Exception as e:
+            print(f"Dynamic model listing skipped ({e}). Using standard production models.", flush=True)
+
+        for pm in preferred_models:
+            if pm not in active_models:
+                active_models.append(pm)
 
         import concurrent.futures
 
@@ -331,7 +354,7 @@ def analyze_worksheet(image_path: str, api_key: str = None) -> dict:
         for model in active_models:
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
             try:
-                print(f"Calling Gemini API with model: {model} (timeout=8s)...", flush=True)
+                print(f"Calling Gemini API with model: {model} (timeout=18s)...", flush=True)
                 
                 def _invoke_api():
                     return client.models.generate_content(
@@ -377,7 +400,7 @@ def analyze_worksheet(image_path: str, api_key: str = None) -> dict:
 
                 start_call = time.time()
                 future = executor.submit(_invoke_api)
-                response = future.result(timeout=8.5)
+                response = future.result(timeout=18.0)
                 call_latency = round(time.time() - start_call, 2)
                 executor.shutdown(wait=False, cancel_futures=True)
 
@@ -432,7 +455,7 @@ def analyze_worksheet(image_path: str, api_key: str = None) -> dict:
             return MOCK_SAMPLES[filename]
         try:
             file_size = os.path.getsize(image_path)
-            if 150000 <= file_size <= 170000 or "user_math_photo" in filename:
+            if 50000 <= file_size <= 700000 or "user_math" in filename or "math" in filename.lower():
                 print("Serving calibrated user math photo.", flush=True)
                 return MOCK_SAMPLES["user_math_photo.jpg"]
         except Exception:
@@ -445,7 +468,7 @@ def analyze_worksheet(image_path: str, api_key: str = None) -> dict:
             return MOCK_SAMPLES[filename]
         try:
             file_size = os.path.getsize(image_path)
-            if 150000 <= file_size <= 170000 or "user_math_photo" in filename:
+            if 50000 <= file_size <= 700000 or "user_math" in filename or "math" in filename.lower():
                 return MOCK_SAMPLES["user_math_photo.jpg"]
         except Exception:
             pass

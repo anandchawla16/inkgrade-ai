@@ -395,7 +395,7 @@ async function gradeSampleSheet(sampleId, title) {
   if (apiKey) formData.append("api_key", apiKey);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 16000);
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
 
   try {
     const res = await fetch("/api/grade", {
@@ -413,11 +413,16 @@ async function gradeSampleSheet(sampleId, title) {
   } catch (err) {
     clearTimeout(timeoutId);
     const msg = err.name === "AbortError" 
-      ? "Grading request timed out after 16s. Click Retry to re-evaluate." 
+      ? "Grading request timed out after 25s. Click Retry to re-evaluate." 
       : err.message;
     showError(
       msg,
-      () => gradeSampleSheet(sampleId, title)
+      () => gradeSampleSheet(sampleId, title),
+      () => {
+        // Fallback to offline calibrated sample directly
+        const sampleCard = document.querySelector(`.sample-card[data-id="${sampleId}"]`);
+        if (sampleCard) sampleCard.click();
+      }
     );
   } finally {
     showLoading(false);
@@ -462,7 +467,7 @@ async function gradeUploadedFile(file, addToList = true) {
   formData.append("api_key", apiKey);
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 16000);
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
 
   try {
     const res = await fetch("/api/grade", {
@@ -480,7 +485,7 @@ async function gradeUploadedFile(file, addToList = true) {
   } catch (err) {
     clearTimeout(timeoutId);
     const msg = err.name === "AbortError" 
-      ? "Grading request timed out after 16s. Google AI servers took longer than expected. Click Retry." 
+      ? "Grading request timed out after 25s. Google AI servers took longer than expected. Click Retry." 
       : err.message;
     showError(
       msg,
